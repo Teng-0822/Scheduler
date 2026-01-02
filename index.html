@@ -3,47 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Assistant Scheduler with calendar and reminders">
     <meta name="theme-color" content="#4a90e2">
     <title>Virtual Assistant Scheduler</title>
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlZpcnR1YWwgQXNzaXN0YW50IFNjaGVkdWxlciIsCiAgInNob3J0X25hbWUiOiAiVkEgU2NoZWR1bGVyIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjNGE5MGUyIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3RleHQgeT0nLjllbScgZm9udC1zaXplPSc5MCclM0UlRjAlOUYlOTMlODUlM0MvdGV4dCUzRSUzQy9zdmclM0UiLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
     <style>
-        /* CSS Variables for Theme Customization */
         :root {
-            --primary-color: #4a90e2;
+            --primary: #4a90e2;
             --primary-dark: #357abd;
-            --primary-light: #6ba3e8;
-            --secondary-color: #764ba2;
-            --background-gradient-start: #667eea;
-            --background-gradient-end: #764ba2;
-            --text-color: #333;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --text: #333;
             --text-light: #666;
-            --text-lighter: #888;
-            --border-color: #e9ecef;
-            --bg-light: #f8f9fa;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --info-color: #3498db;
+            --border: #e9ecef;
+            --bg: #f8f9fa;
         }
 
-        /* Global Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 10px;
-            color: var(--text-color);
+            color: var(--text);
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -51,12 +37,10 @@
             overflow: hidden;
         }
 
-        /* Header */
         header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             padding: 20px;
-            position: relative;
         }
 
         .header-content {
@@ -67,2133 +51,704 @@
             gap: 15px;
         }
 
-        .header-left {
-            flex: 1;
-            min-width: 200px;
-        }
+        header h1 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 5px; }
+        header p { font-size: clamp(0.85rem, 2vw, 1rem); opacity: 0.9; }
+
+        .profile { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 50px; cursor: pointer; }
+        .avatar { width: 35px; height: 35px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 1.2em; color: var(--primary); }
+
+        .tabs { display: flex; background: var(--bg); border-bottom: 2px solid var(--border); overflow-x: auto; }
+        .tab-btn { flex: 1; min-width: 100px; padding: 15px; background: none; border: none; font-size: 1rem; font-weight: 600; color: var(--text-light); cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn:hover { background: #e9ecef; color: var(--primary); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: white; }
+
+        .tab-content { display: none; padding: 20px; }
+        .tab-content.active { display: block; }
+
+        .client-filter { background: var(--bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .client-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .pill { padding: 8px 16px; border-radius: 20px; border: 2px solid var(--border); background: white; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .pill:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .pill .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .calendar-header h2 { font-size: clamp(1.3rem, 3vw, 1.8rem); color: var(--primary); }
+        .calendar-nav { display: flex; gap: 8px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-secondary { background: #95a5a6; color: white; }
+
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
+        .cal-header { text-align: center; font-weight: 700; padding: 10px; background: var(--bg); border-radius: 8px; font-size: 0.9rem; }
+        .cal-day { aspect-ratio: 1; border: 2px solid var(--border); border-radius: 12px; padding: 8px; cursor: pointer; background: white; position: relative; display: flex; flex-direction: column; align-items: center; min-height: 60px; }
+        .cal-day:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 6px 20px rgba(74,144,226,0.3); }
+        .cal-day.other { opacity: 0.3; background: var(--bg); }
+        .cal-day.today { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; font-weight: 700; }
+        .cal-day.has-tasks::after { content: ''; position: absolute; bottom: 6px; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; }
+        .cal-day.today.has-tasks::after { background: white; }
+        .day-num { font-size: 1.1rem; font-weight: 600; margin-bottom: 3px; }
+        .day-count { font-size: 0.7rem; opacity: 0.8; }
+        .day-dots { display: flex; gap: 3px; margin-top: 2px; }
+        .day-dots .dot { width: 5px; height: 5px; border-radius: 50%; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; padding: 20px; overflow-y: auto; }
+        .modal.active { display: flex; justify-content: center; align-items: flex-start; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; max-width: 600px; width: 100%; margin: 20px auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border); }
+        .modal-header h3 { font-size: 1.5rem; color: var(--primary); }
+        .close-btn { background: none; border: none; font-size: 2em; color: #999; cursor: pointer; }
+        .close-btn:hover { color: var(--danger); }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .task-list { display: flex; flex-direction: column; gap: 12px; }
+        .task-item { background: var(--bg); padding: 15px; border-radius: 12px; border-left: 5px solid; }
+        .task-item.urgency-low { border-left-color: var(--success); }
+        .task-item.urgency-medium { border-left-color: var(--warning); }
+        .task-item.urgency-high { border-left-color: #e67e22; }
+        .task-item.urgency-urgent { border-left-color: var(--danger); }
+        .task-header { display: flex; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .task-title { font-size: 1.2rem; font-weight: 700; flex: 1; }
+        .task-badges { display: flex; gap: 8px; }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: white; }
+        .task-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.85rem; color: var(--text-light); margin: 10px 0; }
+        .task-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+        .client-item { background: var(--bg); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .client-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .client-box { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2em; color: white; font-weight: bold; }
+
+        .welcome-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; }
+        .welcome-modal.active { display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .welcome-content { background: white; padding: 40px; border-radius: 20px; max-width: 500px; text-align: center; }
+        .welcome-content h2 { color: var(--primary); font-size: 2rem; margin-bottom: 20px; }
+        .welcome-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
+        .welcome-btn { padding: 18px; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
+        .welcome-btn.primary { background: var(--primary); color: white; }
+        .welcome-btn.secondary { background: white; color: var(--primary); border: 3px solid var(--primary); }
+
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 15px; }
 
-        header h1 {
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        header p {
-            font-size: clamp(0.85rem, 2vw, 1rem);
-            opacity: 0.9;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .profile-section:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .profile-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .profile-name {
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-
-        .settings-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 1.3em;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .settings-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        /* Navigation Tabs */
-        .tabs {
-            display: flex;
-            background: var(--bg-light);
-            border-bottom: 2px solid var(--border-color);
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .tabs::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .tabs::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 15px 20px;
-            background: none;
-            border: none;
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            font-weight: 600;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-        }
-
-        .tab-btn:hover {
-            background: #e9ecef;
-            color: var(--primary-color);
-        }
-
-        .tab-btn.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-            background: white;
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            padding: 15px;
-            animation: fadeIn 0.3s;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Calendar Styles */
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .calendar-header h2 {
-            font-size: clamp(1.3rem, 3vw, 1.8rem);
-            color: var(--primary-color);
-        }
-
-        .calendar-nav {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            padding: 10px 15px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: clamp(0.85rem, 2vw, 1rem);
-            transition: all 0.3s;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .nav-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            font-weight: 700;
-            padding: 10px 5px;
-            background: var(--bg-light);
-            border-radius: 8px;
-            color: var(--text-light);
-            font-size: clamp(0.75rem, 1.5vw, 0.95rem);
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 8px 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            min-height: 60px;
-        }
-
-        .calendar-day:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-4px);
-            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
-        }
-
-        .calendar-day.other-month {
-            opacity: 0.3;
-            background: var(--bg-light);
-        }
-
-        .calendar-day.today {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            font-weight: 700;
-            border-color: var(--primary-dark);
-        }
-
-        .calendar-day.has-tasks::after {
-            content: '';
-            position: absolute;
-            bottom: 6px;
-            width: 6px;
-            height: 6px;
-            background: var(--danger-color);
-            border-radius: 50%;
-        }
-
-        .calendar-day.today.has-tasks::after {
-            background: white;
-        }
-
-        .day-number {
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-
-        .day-task-count {
-            font-size: clamp(0.65rem, 1.5vw, 0.75rem);
-            opacity: 0.8;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            animation: fadeIn 0.3s;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s;
-            margin: 20px auto;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .modal-header h3 {
-            font-size: clamp(1.3rem, 3vw, 1.8rem);
-            color: var(--primary-color);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 2em;
-            color: #999;
-            cursor: pointer;
-            transition: color 0.3s;
-            line-height: 1;
-        }
-
-        .close-btn:hover {
-            color: var(--danger-color);
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: clamp(0.85rem, 2vw, 0.95rem);
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .color-picker-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .color-picker-group input[type="color"] {
-            width: 60px;
-            height: 45px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .color-preview {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .theme-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .theme-option {
-            padding: 15px;
-            border: 3px solid var(--border-color);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .theme-option:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .theme-option.active {
-            border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
-        }
-
-        .btn-danger {
-            background: var(--danger-color);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-        }
-
-        .btn-secondary {
-            background: #95a5a6;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #7f8c8d;
-        }
-
-        .btn-success {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #229954;
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        /* Task List Styles */
-        .task-filters {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 10px 15px;
-            background: var(--bg-light);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            color: var(--text-light);
-            font-size: clamp(0.85rem, 2vw, 0.95rem);
-        }
-
-        .filter-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .task-item {
-            background: var(--bg-light);
-            padding: 15px;
-            border-radius: 12px;
-            border-left: 5px solid;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .task-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .task-item.urgency-low {
-            border-left-color: var(--success-color);
-        }
-
-        .task-item.urgency-medium {
-            border-left-color: var(--warning-color);
-        }
-
-        .task-item.urgency-high {
-            border-left-color: #e67e22;
-        }
-
-        .task-item.urgency-urgent {
-            border-left-color: var(--danger-color);
-        }
-
-        .task-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .task-title {
-            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
-            font-weight: 700;
-            color: var(--text-color);
-            flex: 1;
-            word-break: break-word;
-        }
-
-        .task-urgency {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: clamp(0.75rem, 1.5vw, 0.85rem);
-            font-weight: 700;
-            text-transform: uppercase;
-            color: white;
-        }
-
-        .task-urgency.low {
-            background: var(--success-color);
-        }
-
-        .task-urgency.medium {
-            background: var(--warning-color);
-        }
-
-        .task-urgency.high {
-            background: #e67e22;
-        }
-
-        .task-urgency.urgent {
-            background: var(--danger-color);
-        }
-
-        .task-description {
-            color: var(--text-light);
-            margin-bottom: 12px;
-            line-height: 1.6;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-            word-break: break-word;
-        }
-
-        .task-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            font-size: clamp(0.8rem, 1.8vw, 0.9rem);
-            color: var(--text-lighter);
-            margin-bottom: 12px;
-        }
-
-        .task-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .btn-small {
-            padding: 8px 15px;
-            font-size: clamp(0.8rem, 1.8vw, 0.9rem);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        .empty-state-icon {
-            font-size: clamp(3rem, 8vw, 4rem);
-            margin-bottom: 15px;
-        }
-
-        .empty-state h3 {
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            margin-bottom: 10px;
-            color: var(--text-light);
-        }
-
-        /* Info Box Styles */
-        .info-box {
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 2px solid;
-        }
-
-        .info-box.info {
-            background: #d1ecf1;
-            border-color: #bee5eb;
-            color: #0c5460;
-        }
-
-        .info-box.warning {
-            background: #fff3cd;
-            border-color: #ffc107;
-            color: #856404;
-        }
-
-        .info-box.success {
-            background: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-        }
-
-        .info-box h4 {
-            margin-bottom: 10px;
-            font-size: clamp(1rem, 2.5vw, 1.1rem);
-        }
-
-        .info-box p, .info-box ul {
-            line-height: 1.6;
-            margin-bottom: 8px;
-            font-size: clamp(0.85rem, 2vw, 0.95rem);
-        }
-
-        .info-box ul {
-            margin-left: 20px;
-            line-height: 1.8;
-        }
-
-        .info-box pre {
-            background: rgba(0, 0, 0, 0.05);
-            padding: 10px;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-size: clamp(0.75rem, 1.5vw, 0.85rem);
-            margin: 10px 0;
-        }
-
-        .info-box code {
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Settings Panel */
-        .settings-panel {
-            max-width: 800px;
-        }
-
-        .settings-section {
-            margin-bottom: 30px;
-        }
-
-        .settings-section h3 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: clamp(1.2rem, 3vw, 1.4rem);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .avatar-option {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--bg-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            cursor: pointer;
-            border: 3px solid var(--border-color);
-            transition: all 0.3s;
-        }
-
-        .avatar-option:hover {
-            transform: scale(1.1);
-        }
-
-        .avatar-option.active {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-        }
-
-        .code-block {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: clamp(0.75rem, 1.5vw, 0.85rem);
-        }
-
-        .copy-btn {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            margin-top: 8px;
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
-            body {
-                padding: 5px;
-            }
-
-            .container {
-                border-radius: 15px;
-            }
-
-            header {
-                padding: 15px;
-            }
-
-            .tab-content {
-                padding: 15px;
-            }
-
-            .calendar-grid {
-                gap: 5px;
-            }
-
-            .calendar-day {
-                padding: 5px 3px;
-                min-height: 50px;
-            }
-
-            .modal-content {
-                padding: 20px;
-                margin: 10px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .calendar-day-header {
-                padding: 8px 3px;
-                font-size: 0.7rem;
-            }
-
-            .day-number {
-                font-size: 0.9rem;
-            }
-
-            .day-task-count {
-                font-size: 0.6rem;
-            }
-
-            .task-actions {
-                width: 100%;
-            }
-
-            .task-actions .btn-small {
-                flex: 1;
-            }
-
-            .theme-options {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        /* Tablet specific */
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .calendar-grid {
-                gap: 10px;
-            }
-
-            .calendar-day {
-                min-height: 70px;
-            }
-
-            .tab-content {
-                padding: 20px;
-            }
-        }
-
-        /* Large screens */
-        @media (min-width: 1400px) {
-            .tab-content {
-                padding: 30px;
-            }
+            .calendar { gap: 5px; }
+            .cal-day { padding: 5px; min-height: 50px; font-size: 0.9rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <div class="header-left">
-                    <h1>📅 Virtual Assistant Scheduler</h1>
-                    <p>Organize your tasks and never miss an important event</p>
-                </div>
-                <div class="header-right">
-                    <div class="profile-section" onclick="openProfileModal()">
-                        <div class="profile-avatar" id="headerAvatar">👤</div>
-                        <div class="profile-name" id="headerName">Guest User</div>
-                    </div>
-                    <button class="settings-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Navigation Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="calendar">📅 Calendar</button>
-            <button class="tab-btn" data-tab="tasks">📋 All Tasks</button>
-            <button class="tab-btn" data-tab="shortcuts">🔗 Shortcuts</button>
-            <button class="tab-btn" data-tab="profile">👤 Profile</button>
-            <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
-        </div>
-
-        <!-- Calendar Tab -->
-        <div id="calendar" class="tab-content active">
-            <!-- Notification Permission Banner -->
-            <div id="notificationBanner" class="info-box info" style="display: none;">
-                <p>🔔 <strong>Enable notifications to receive reminders for your tasks!</strong></p>
-                <button class="btn btn-primary" onclick="requestNotificationPermission()">Enable Notifications</button>
-            </div>
-
-            <!-- PWA Info -->
-            <div class="info-box warning">
-                <h4>📱 For Better Mobile Experience:</h4>
-                <p><strong>Add this app to your home screen for reliable notifications!</strong></p>
-                <ul>
-                    <li><strong>iOS:</strong> Tap Share button → "Add to Home Screen"</li>
-                    <li><strong>Android:</strong> Tap Menu (⋮) → "Add to Home screen" or "Install app"</li>
-                </ul>
-            </div>
-
-            <div class="calendar-header">
-                <h2 id="currentMonth"></h2>
-                <div class="calendar-nav">
-                    <button class="nav-btn" onclick="changeMonth(-1)">← Prev</button>
-                    <button class="nav-btn" onclick="changeMonth(0)">Today</button>
-                    <button class="nav-btn" onclick="changeMonth(1)">Next →</button>
-                </div>
-            </div>
-
-            <div class="calendar-grid" id="calendarGrid"></div>
-
-            <div id="dayTasks" style="display: none; margin-top: 20px;">
-                <h3 style="margin-bottom: 15px; color: var(--primary-color); font-size: clamp(1.2rem, 3vw, 1.5rem);">Tasks for <span id="selectedDate"></span></h3>
-                <button class="btn btn-primary" style="margin-bottom: 15px;" onclick="openAddTaskModal()">+ Add New Task</button>
-                <div id="dayTasksList" class="task-list"></div>
-            </div>
-        </div>
-
-        <!-- All Tasks Tab -->
-        <div id="tasks" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-                <h2 style="color: var(--primary-color); font-size: clamp(1.3rem, 3vw, 1.8rem);">All Tasks</h2>
-                <button class="btn btn-primary" onclick="openAddTaskModal()">+ Add New Task</button>
-            </div>
-
-            <div class="task-filters">
-                <button class="filter-btn active" data-filter="all" onclick="filterTasks('all')">All</button>
-                <button class="filter-btn" data-filter="upcoming" onclick="filterTasks('upcoming')">Upcoming</button>
-                <button class="filter-btn" data-filter="urgent" onclick="filterTasks('urgent')">Urgent</button>
-                <button class="filter-btn" data-filter="high" onclick="filterTasks('high')">High</button>
-                <button class="filter-btn" data-filter="medium" onclick="filterTasks('medium')">Medium</button>
-                <button class="filter-btn" data-filter="low" onclick="filterTasks('low')">Low</button>
-            </div>
-
-            <div id="allTasksList" class="task-list"></div>
-        </div>
-
-        <!-- Shortcuts Integration Tab -->
-        <div id="shortcuts" class="tab-content">
-            <div class="settings-panel">
-                <h2 style="color: var(--primary-color); margin-bottom: 20px;">🔗 Shortcuts & Automation</h2>
-
-                <!-- Export/Import Section -->
-                <div class="settings-section">
-                    <h3>📤 Export & Import Tasks</h3>
-                    <p style="color: var(--text-light); margin-bottom: 15px;">Export your tasks to use with Shortcuts app or import from another device.</p>
-                    
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-                        <button class="btn btn-success" onclick="exportTasks()">📤 Export Tasks (JSON)</button>
-                        <button class="btn btn-primary" onclick="exportTasksICS()">📅 Export as Calendar (ICS)</button>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Import Tasks (JSON)</label>
-                        <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
-                        <button class="btn btn-primary btn-full" onclick="importTasks()">📥 Import Tasks</button>
-                    </div>
-                </div>
-
-                <!-- API/URL Scheme Section -->
-                <div class="settings-section">
-                    <h3>🔗 URL Schemes for Shortcuts</h3>
-                    <p style="color: var(--text-light); margin-bottom: 15px;">Use these URL schemes to create tasks directly from iOS Shortcuts or other apps.</p>
-                    
-                    <div class="info-box info">
-                        <h4>Add Task via URL</h4>
-                        <p>Copy this URL format and use it in your Shortcuts:</p>
-                        <div class="code-block" id="urlScheme"></div>
-                        <button class="btn btn-secondary copy-btn" onclick="copyToClipboard('urlScheme')">📋 Copy URL</button>
-                        
-                        <p style="margin-top: 15px;"><strong>Parameters:</strong></p>
-                        <ul style="margin-left: 20px; line-height: 1.8;">
-                            <li><code>title</code> - Task title (required)</li>
-                            <li><code>description</code> - Task description</li>
-                            <li><code>date</code> - Date (YYYY-MM-DD format)</li>
-                            <li><code>time</code> - Start time (HH:MM format)</li>
-                            <li><code>urgency</code> - low, medium, high, urgent</li>
-                            <li><code>reminder</code> - Minutes before (5, 15, 30, 60, 1440)</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Shortcuts App Integration Guide -->
-                <div class="settings-section">
-                    <h3>📲 iOS Shortcuts Setup Guide</h3>
-                    
-                    <div class="info-box warning">
-                        <h4>Method 1: Quick Add Shortcut</h4>
-                        <ol style="margin-left: 20px; line-height: 2;">
-                            <li>Open the <strong>Shortcuts</strong> app on iOS</li>
-                            <li>Tap <strong>+</strong> to create new shortcut</li>
-                            <li>Add action: <strong>Text</strong></li>
-                            <li>Add action: <strong>Ask for Input</strong> (for task title)</li>
-                            <li>Add action: <strong>Get Current Date</strong></li>
-                            <li>Add action: <strong>URL</strong> - paste the URL scheme from above</li>
-                            <li>Add action: <strong>Open URLs</strong></li>
-                            <li>Name your shortcut "Quick Add Task"</li>
-                        </ol>
-                    </div>
-
-                    <div class="info-box warning">
-                        <h4>Method 2: Using Automation</h4>
-                        <ol style="margin-left: 20px; line-height: 2;">
-                            <li>Open <strong>Shortcuts</strong> app</li>
-                            <li>Go to <strong>Automation</strong> tab</li>
-                            <li>Tap <strong>+</strong> → <strong>Create Personal Automation</strong></li>
-                            <li>Choose trigger (e.g., Time of Day, Arrive/Leave Location)</li>
-                            <li>Add action: <strong>Show Notification</strong></li>
-                            <li>Customize notification with task reminder</li>
-                        </ol>
-                        <p><strong>Note:</strong> For reminders to work when app is closed, you need to export tasks to iOS Calendar (use ICS export above).</p>
-                    </div>
-
-                    <div class="info-box success">
-                        <h4>Method 3: Export to iOS Calendar (Recommended for Reminders)</h4>
-                        <ol style="margin-left: 20px; line-height: 2;">
-                            <li>Click <strong>"Export as Calendar (ICS)"</strong> button above</li>
-                            <li>Open the downloaded .ics file on your iPhone</li>
-                            <li>Tap <strong>"Add All"</strong> to add events to your iOS Calendar</li>
-                            <li>iOS Calendar will now handle all reminders natively!</li>
-                            <li>You'll get native iOS notifications even when this app is closed</li>
-                        </ol>
-                        <p><strong>✅ This is the BEST method for reliable reminders on iOS!</strong></p>
-                    </div>
-                </div>
-
-                <!-- Android Integration -->
-                <div class="settings-section">
-                    <h3>🤖 Android Integration</h3>
-                    
-                    <div class="info-box info">
-                        <h4>Using Tasker (Android)</h4>
-                        <ol style="margin-left: 20px; line-height: 2;">
-                            <li>Install <strong>Tasker</strong> from Play Store</li>
-                            <li>Create new Task</li>
-                            <li>Add action: <strong>Net → Browse URL</strong></li>
-                            <li>Paste the URL scheme from above</li>
-                            <li>Create Profile to trigger the task</li>
-                        </ol>
-                    </div>
-
-                    <div class="info-box success">
-                        <h4>Export to Google Calendar (Recommended)</h4>
-                        <ol style="margin-left: 20px; line-height: 2;">
-                            <li>Click <strong>"Export as Calendar (ICS)"</strong> button above</li>
-                            <li>Open Gmail or Google Calendar on your phone</li>
-                            <li>Import the .ics file</li>
-                            <li>Google Calendar will handle all reminders!</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <!-- Webhook Support -->
-                <div class="settings-section">
-                    <h3>🔌 Webhook Support</h3>
-                    <p style="color: var(--text-light); margin-bottom: 15px;">Get upcoming tasks as JSON for integration with other services (IFTTT, Zapier, etc.)</p>
-                    
-                    <button class="btn btn-primary" onclick="showWebhookData()">📊 View Webhook Data</button>
-                    
-                    <div id="webhookData" style="display: none; margin-top: 15px;">
-                        <div class="code-block" id="webhookJson"></div>
-                        <button class="btn btn-secondary copy-btn" onclick="copyToClipboard('webhookJson')">📋 Copy JSON</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Profile Tab -->
-        <div id="profile" class="tab-content">
-            <div class="settings-panel">
-                <div class="settings-section">
-                    <h3>👤 User Profile</h3>
-                    
-                    <div class="form-group">
-                        <label for="profileName">Name</label>
-                        <input type="text" id="profileName" placeholder="Enter your name">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="profileEmail">Email (optional)</label>
-                        <input type="email" id="profileEmail" placeholder="Enter your email">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Choose Your Avatar</label>
-                        <div class="avatar-selector" id="avatarSelector"></div>
-                    </div>
-
-                    <button class="btn btn-primary btn-full" onclick="saveProfile()">Save Profile</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="settings" class="tab-content">
-            <div class="settings-panel">
-                <div class="settings-section">
-                    <h3>🎨 Theme Selection</h3>
-                    <div class="theme-options" id="themeOptions"></div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>🎨 Custom Colors</h3>
-                    
-                    <div class="form-group">
-                        <label>Primary Color</label>
-                        <div class="color-picker-group">
-                            <input type="color" id="primaryColor" value="#4a90e2">
-                            <div class="color-preview" id="primaryPreview" style="background: #4a90e2; color: white;">Primary</div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Background Gradient Start</label>
-                        <div class="color-picker-group">
-                            <input type="color" id="bgGradientStart" value="#667eea">
-                            <div class="color-preview" id="bgStartPreview" style="background: #667eea; color: white;">Gradient Start</div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Background Gradient End</label>
-                        <div class="color-picker-group">
-                            <input type="color" id="bgGradientEnd" value="#764ba2">
-                            <div class="color-preview" id="bgEndPreview" style="background: #764ba2; color: white;">Gradient End</div>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-primary btn-full" onclick="applyCustomTheme()">Apply Custom Theme</button>
-                </div>
-
-                <div class="settings-section">
-                    <h3>🔄 Reset</h3>
-                    <button class="btn btn-secondary btn-full" onclick="resetToDefault()">Reset to Default Theme</button>
-                </div>
+    <div id="welcomeModal" class="welcome-modal">
+        <div class="welcome-content">
+            <h2>👋 Welcome!</h2>
+            <p>Choose how you'd like to use this app:</p>
+            <div class="welcome-btns">
+                <button class="welcome-btn primary" onclick="chooseMode('personal')">👤 Personal Use<br><small>Set up your profile</small></button>
+                <button class="welcome-btn secondary" onclick="chooseMode('guest')">🚶 Guest Mode<br><small>Start immediately</small></button>
             </div>
         </div>
     </div>
 
-    <!-- Add/Edit Task Modal -->
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>📅 Virtual Assistant Scheduler</h1>
+                    <p>Manage tasks by client</p>
+                </div>
+                <div class="profile" onclick="openTab('profile')">
+                    <div class="avatar" id="avatar">👤</div>
+                    <span id="userName">Guest</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="calendar">📅 Calendar</button>
+            <button class="tab-btn" data-tab="tasks">📋 Tasks</button>
+            <button class="tab-btn" data-tab="clients">👥 Clients</button>
+            <button class="tab-btn" data-tab="profile">👤 Profile</button>
+        </div>
+
+        <div id="calendar" class="tab-content active">
+            <div class="client-filter">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <h4>🎯 Filter by Client</h4>
+                    <button class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.85rem;" onclick="toggleAllClients()"><span id="toggleText">Hide All</span></button>
+                </div>
+                <div class="client-pills" id="clientPills"></div>
+            </div>
+
+            <div class="calendar-header">
+                <h2 id="monthYear"></h2>
+                <div class="calendar-nav">
+                    <button class="btn btn-primary" onclick="changeMonth(-1)">← Prev</button>
+                    <button class="btn btn-primary" onclick="changeMonth(0)">Today</button>
+                    <button class="btn btn-primary" onclick="changeMonth(1)">Next →</button>
+                </div>
+            </div>
+
+            <div class="calendar" id="calendarGrid"></div>
+        </div>
+
+        <div id="tasks" class="tab-content">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 style="color: var(--primary);">All Tasks</h2>
+                <button class="btn btn-primary" onclick="openTaskModal()">+ Add Task</button>
+            </div>
+            <div id="tasksList" class="task-list"></div>
+        </div>
+
+        <div id="clients" class="tab-content">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2 style="color: var(--primary);">Clients</h2>
+                <button class="btn btn-primary" onclick="openClientModal()">+ Add Client</button>
+            </div>
+            <div id="clientsList"></div>
+        </div>
+
+        <div id="profile" class="tab-content">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">Your Profile</h2>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="profileName" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <label>Avatar</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <div class="avatar" style="cursor: pointer; border: 3px solid var(--border);" onclick="selectAvatar('👤')">👤</div>
+                    <div class="avatar" style="cursor: pointer; border: 3px solid var(--border);" onclick="selectAvatar('😊')">😊</div>
+                    <div class="avatar" style="cursor: pointer; border: 3px solid var(--border);" onclick="selectAvatar('😎')">😎</div>
+                    <div class="avatar" style="cursor: pointer; border: 3px solid var(--border);" onclick="selectAvatar('👨‍💼')">👨‍💼</div>
+                    <div class="avatar" style="cursor: pointer; border: 3px solid var(--border);" onclick="selectAvatar('👩‍💼')">👩‍💼</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveProfile()">Save Profile</button>
+        </div>
+    </div>
+
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitle">Add New Task</h3>
-                <button class="close-btn" onclick="closeTaskModal()">&times;</button>
+                <h3 id="taskModalTitle">Add Task</h3>
+                <button class="close-btn" onclick="closeModal('taskModal')">&times;</button>
             </div>
-
-            <form id="taskForm" onsubmit="saveTask(event)">
-                <input type="hidden" id="taskId" value="">
-
+            <form onsubmit="saveTask(event)">
+                <input type="hidden" id="taskId">
                 <div class="form-group">
-                    <label for="taskTitle">Task Title *</label>
-                    <input type="text" id="taskTitle" required placeholder="Enter task title">
+                    <label>Task Title *</label>
+                    <input type="text" id="taskTitle" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="taskDescription">Description</label>
-                    <textarea id="taskDescription" placeholder="Enter task description (optional)"></textarea>
+                    <label>Client *</label>
+                    <select id="taskClient" required></select>
                 </div>
-
                 <div class="form-group">
-                    <label for="taskDate">Date *</label>
+                    <label>Description</label>
+                    <textarea id="taskDesc" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
                     <input type="date" id="taskDate" required>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="taskStartTime">Start Time *</label>
-                        <input type="time" id="taskStartTime" required>
+                        <label>Start Time *</label>
+                        <input type="time" id="taskStart" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="taskEndTime">End Time</label>
-                        <input type="time" id="taskEndTime">
+                        <label>End Time</label>
+                        <input type="time" id="taskEnd">
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="taskUrgency">Urgency Level *</label>
+                        <label>Urgency *</label>
                         <select id="taskUrgency" required>
-                            <option value="low">Low (Green)</option>
-                            <option value="medium" selected>Medium (Yellow)</option>
-                            <option value="high">High (Orange)</option>
-                            <option value="urgent">Urgent (Red)</option>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
                         </select>
                     </div>
-
                     <div class="form-group">
-                        <label for="taskReminder">Reminder Before</label>
+                        <label>Reminder</label>
                         <select id="taskReminder">
-                            <option value="0">No Reminder</option>
-                            <option value="5">5 minutes</option>
-                            <option value="15" selected>15 minutes</option>
-                            <option value="30">30 minutes</option>
+                            <option value="0">None</option>
+                            <option value="5">5 min</option>
+                            <option value="15" selected>15 min</option>
+                            <option value="30">30 min</option>
                             <option value="60">1 hour</option>
-                            <option value="1440">1 day</option>
                         </select>
                     </div>
                 </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 25px; flex-wrap: wrap;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 120px;">Save Task</button>
-                    <button type="button" class="btn btn-secondary" style="flex: 1; min-width: 120px;" onclick="closeTaskModal()">Cancel</button>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="clientModalTitle">Add Client</h3>
+                <button class="close-btn" onclick="closeModal('clientModal')">&times;</button>
+            </div>
+            <form onsubmit="saveClient(event)">
+                <input type="hidden" id="clientId">
+                <div class="form-group">
+                    <label>Client Name *</label>
+                    <input type="text" id="clientName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="clientEmail">
+                </div>
+                <div class="form-group">
+                    <label>Color *</label>
+                    <input type="color" id="clientColor" value="#4a90e2" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('clientModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dayTasksModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="dayTasksTitle">Tasks</h3>
+                <button class="close-btn" onclick="closeModal('dayTasksModal')">&times;</button>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="openTaskModal()">+ Add Task</button>
+            <div id="dayTasksList" class="task-list"></div>
+        </div>
+    </div>
+
     <script>
-        // Global Variables
         let currentDate = new Date();
         let selectedDate = null;
         let tasks = [];
+        let clients = [];
+        let visibleClients = new Set();
         let editingTaskId = null;
-        let currentFilter = 'all';
-        let scheduledNotifications = {};
-        let userProfile = {
-            name: 'Guest User',
-            email: '',
-            avatar: '👤'
-        };
-        let currentTheme = 'default';
+        let editingClientId = null;
+        let profile = { name: 'Guest', avatar: '👤', isGuest: true };
 
-        // Predefined Themes
-        const themes = {
-            default: {
-                name: 'Ocean Blue',
-                primaryColor: '#4a90e2',
-                primaryDark: '#357abd',
-                bgGradientStart: '#667eea',
-                bgGradientEnd: '#764ba2'
-            },
-            sunset: {
-                name: 'Sunset',
-                primaryColor: '#ff6b6b',
-                primaryDark: '#ee5a6f',
-                bgGradientStart: '#f093fb',
-                bgGradientEnd: '#f5576c'
-            },
-            forest: {
-                name: 'Forest',
-                primaryColor: '#27ae60',
-                primaryDark: '#229954',
-                bgGradientStart: '#56ab2f',
-                bgGradientEnd: '#a8e063'
-            },
-            lavender: {
-                name: 'Lavender',
-                primaryColor: '#9b59b6',
-                primaryDark: '#8e44ad',
-                bgGradientStart: '#a8c0ff',
-                bgGradientEnd: '#3f2b96'
-            },
-            coral: {
-                name: 'Coral',
-                primaryColor: '#ff7979',
-                primaryDark: '#eb4d4b',
-                bgGradientStart: '#fa709a',
-                bgGradientEnd: '#fee140'
-            },
-            midnight: {
-                name: 'Midnight',
-                primaryColor: '#3498db',
-                primaryDark: '#2980b9',
-                bgGradientStart: '#2c3e50',
-                bgGradientEnd: '#3498db'
-            }
-        };
-
-        // Avatar Options
-        const avatarOptions = ['👤', '😊', '😎', '🤓', '👨', '👩', '🧑', '👨‍💼', '👩‍💼', '👨‍🎓', '👩‍🎓', '🦸', '🦹', '🧙', '🧝', '🧛'];
-
-        // Initialize App
         function init() {
-            loadUserProfile();
-            loadTheme();
-            loadTasks();
-            handleURLScheme(); // Handle URL scheme parameters
+            checkFirstTime();
+            loadData();
             renderCalendar();
-            renderAllTasks();
+            renderTasks();
+            renderClients();
+            renderClientPills();
+            updateClientSelect();
+            updateProfile();
             setupTabs();
-            checkNotificationPermission();
-            scheduleAllNotifications();
-            renderThemeOptions();
-            renderAvatarOptions();
-            setupColorPickers();
-            updateProfileDisplay();
-            updateURLScheme();
-            
-            // Set default date for new task
-            document.getElementById('taskDate').valueAsDate = new Date();
         }
 
-        // URL Scheme Handler
-        function handleURLScheme() {
-            const params = new URLSearchParams(window.location.search);
-            
-            if (params.has('title')) {
-                // Create task from URL parameters
-                const taskData = {
-                    id: generateId(),
-                    title: params.get('title') || 'New Task',
-                    description: params.get('description') || '',
-                    date: params.get('date') || formatDate(new Date()),
-                    startTime: params.get('time') || '12:00',
-                    endTime: '',
-                    urgency: params.get('urgency') || 'medium',
-                    reminder: parseInt(params.get('reminder') || '15')
-                };
-                
-                tasks.push(taskData);
-                saveTasks();
-                scheduleNotification(taskData);
-                renderCalendar();
-                renderAllTasks();
-                
-                // Show success message
-                alert('✅ Task added successfully: ' + taskData.title);
-                
-                // Clear URL parameters
-                window.history.replaceState({}, document.title, window.location.pathname);
+        function checkFirstTime() {
+            if (!localStorage.getItem('visited')) {
+                document.getElementById('welcomeModal').classList.add('active');
             }
         }
 
-        function updateURLScheme() {
-            const baseURL = window.location.origin + window.location.pathname;
-            const exampleURL = `${baseURL}?title=Meeting&description=Team%20sync&date=2024-12-25&time=14:00&urgency=high&reminder=30`;
-            document.getElementById('urlScheme').textContent = exampleURL;
+        function chooseMode(mode) {
+            localStorage.setItem('visited', 'true');
+            document.getElementById('welcomeModal').classList.remove('active');
+            if (mode === 'personal') openTab('profile');
         }
 
-        // Export/Import Functions
-        function exportTasks() {
-            const dataStr = JSON.stringify(tasks, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `scheduler-tasks-${formatDate(new Date())}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
-            alert('✅ Tasks exported successfully!');
-        }
-
-        function exportTasksICS() {
-            let icsContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Virtual Assistant Scheduler//EN\nCALSCALE:GREGORIAN\n';
+        function loadData() {
+            tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            clients = JSON.parse(localStorage.getItem('clients') || '[]');
+            profile = JSON.parse(localStorage.getItem('profile') || '{"name":"Guest","avatar":"👤","isGuest":true}');
             
-            tasks.forEach(task => {
-                const startDateTime = new Date(`${task.date}T${task.startTime}`);
-                const endDateTime = task.endTime ? 
-                    new Date(`${task.date}T${task.endTime}`) : 
-                    new Date(startDateTime.getTime() + 60 * 60 * 1000); // Default 1 hour duration
-                
-                const formatICSDate = (date) => {
-                    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-                };
-                
-                // Add alarm if reminder is set
-                let alarm = '';
-                if (task.reminder > 0) {
-                    alarm = `BEGIN:VALARM\nTRIGGER:-PT${task.reminder}M\nACTION:DISPLAY\nDESCRIPTION:${task.title}\nEND:VALARM\n`;
-                }
-                
-                icsContent += `BEGIN:VEVENT\n`;
-                icsContent += `UID:${task.id}@scheduler.app\n`;
-                icsContent += `DTSTAMP:${formatICSDate(new Date())}\n`;
-                icsContent += `DTSTART:${formatICSDate(startDateTime)}\n`;
-                icsContent += `DTEND:${formatICSDate(endDateTime)}\n`;
-                icsContent += `SUMMARY:${task.title}\n`;
-                if (task.description) {
-                    icsContent += `DESCRIPTION:${task.description.replace(/\n/g, '\\n')}\n`;
-                }
-                icsContent += `PRIORITY:${task.urgency === 'urgent' ? '1' : task.urgency === 'high' ? '3' : task.urgency === 'medium' ? '5' : '7'}\n`;
-                icsContent += alarm;
-                icsContent += `END:VEVENT\n`;
-            });
-            
-            icsContent += 'END:VCALENDAR';
-            
-            const dataBlob = new Blob([icsContent], { type: 'text/calendar' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `scheduler-calendar-${formatDate(new Date())}.ics`;
-            link.click();
-            URL.revokeObjectURL(url);
-            alert('✅ Calendar exported! Open the file on your phone to add events to your calendar.');
-        }
-
-        function importTasks() {
-            const fileInput = document.getElementById('importFile');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                alert('Please select a file to import');
-                return;
+            if (clients.length === 0) {
+                clients = [
+                    { id: 'c1', name: 'Personal', email: '', color: '#4a90e2' },
+                    { id: 'c2', name: 'Work', email: '', color: '#e74c3c' }
+                ];
+                saveData();
             }
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const importedTasks = JSON.parse(e.target.result);
-                    
-                    if (!Array.isArray(importedTasks)) {
-                        throw new Error('Invalid file format');
-                    }
-                    
-                    // Merge with existing tasks (avoid duplicates by ID)
-                    const existingIds = new Set(tasks.map(t => t.id));
-                    const newTasks = importedTasks.filter(t => !existingIds.has(t.id));
-                    
-                    tasks = [...tasks, ...newTasks];
-                    saveTasks();
-                    scheduleAllNotifications();
-                    renderCalendar();
-                    renderAllTasks();
-                    
-                    alert(`✅ Imported ${newTasks.length} new tasks successfully!`);
-                    fileInput.value = '';
-                } catch (error) {
-                    alert('❌ Error importing file: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
+            visibleClients = new Set(clients.map(c => c.id));
         }
 
-        function showWebhookData() {
-            const webhookDiv = document.getElementById('webhookData');
-            const now = new Date();
-            
-            // Get upcoming tasks (next 7 days)
-            const upcomingTasks = tasks.filter(task => {
-                const taskDate = new Date(task.date + 'T' + task.startTime);
-                const daysUntil = (taskDate - now) / (1000 * 60 * 60 * 24);
-                return daysUntil >= 0 && daysUntil <= 7;
-            }).sort((a, b) => {
-                return (a.date + a.startTime).localeCompare(b.date + b.startTime);
-            });
-            
-            const webhookData = {
-                timestamp: now.toISOString(),
-                totalTasks: tasks.length,
-                upcomingTasks: upcomingTasks.length,
-                tasks: upcomingTasks.map(task => ({
-                    id: task.id,
-                    title: task.title,
-                    description: task.description,
-                    date: task.date,
-                    startTime: task.startTime,
-                    urgency: task.urgency,
-                    reminderMinutes: task.reminder
-                }))
-            };
-            
-            document.getElementById('webhookJson').textContent = JSON.stringify(webhookData, null, 2);
-            webhookDiv.style.display = 'block';
+        function saveData() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('clients', JSON.stringify(clients));
+            localStorage.setItem('profile', JSON.stringify(profile));
         }
 
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                alert('✅ Copied to clipboard!');
-            }).catch(() => {
-                // Fallback for older browsers
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                alert('✅ Copied to clipboard!');
-            });
-        }
-
-        // Profile Management
-        function loadUserProfile() {
-            const stored = localStorage.getItem('schedulerProfile');
-            if (stored) {
-                userProfile = JSON.parse(stored);
-            }
-        }
-
-        function saveProfile() {
-            const name = document.getElementById('profileName').value.trim() || 'Guest User';
-            const email = document.getElementById('profileEmail').value.trim();
-            
-            userProfile.name = name;
-            userProfile.email = email;
-            
-            localStorage.setItem('schedulerProfile', JSON.stringify(userProfile));
-            updateProfileDisplay();
-            alert('Profile saved successfully! ✅');
-        }
-
-        function updateProfileDisplay() {
-            document.getElementById('headerName').textContent = userProfile.name;
-            document.getElementById('headerAvatar').textContent = userProfile.avatar;
-            document.getElementById('profileName').value = userProfile.name;
-            document.getElementById('profileEmail').value = userProfile.email || '';
-            
-            // Update active avatar
-            document.querySelectorAll('.avatar-option').forEach(option => {
-                option.classList.toggle('active', option.textContent === userProfile.avatar);
-            });
-        }
-
-        function renderAvatarOptions() {
-            const container = document.getElementById('avatarSelector');
-            container.innerHTML = avatarOptions.map(avatar => 
-                `<div class="avatar-option ${avatar === userProfile.avatar ? 'active' : ''}" onclick="selectAvatar('${avatar}')">${avatar}</div>`
-            ).join('');
-        }
-
-        function selectAvatar(avatar) {
-            userProfile.avatar = avatar;
-            document.querySelectorAll('.avatar-option').forEach(option => {
-                option.classList.toggle('active', option.textContent === avatar);
-            });
-            updateProfileDisplay();
-        }
-
-        function openProfileModal() {
-            // Switch to profile tab
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            document.querySelector('[data-tab="profile"]').classList.add('active');
-            document.getElementById('profile').classList.add('active');
-        }
-
-        function openSettingsModal() {
-            // Switch to settings tab
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            document.querySelector('[data-tab="settings"]').classList.add('active');
-            document.getElementById('settings').classList.add('active');
-        }
-
-        // Theme Management
-        function loadTheme() {
-            const stored = localStorage.getItem('schedulerTheme');
-            if (stored) {
-                const themeData = JSON.parse(stored);
-                currentTheme = themeData.name || 'default';
-                applyTheme(themeData);
-            }
-        }
-
-        function renderThemeOptions() {
-            const container = document.getElementById('themeOptions');
-            container.innerHTML = Object.entries(themes).map(([key, theme]) => {
-                const isActive = currentTheme === key;
-                return `
-                    <div class="theme-option ${isActive ? 'active' : ''}" 
-                         onclick="selectTheme('${key}')"
-                         style="background: linear-gradient(135deg, ${theme.bgGradientStart} 0%, ${theme.bgGradientEnd} 100%); color: white;">
-                        ${theme.name}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function selectTheme(themeKey) {
-            currentTheme = themeKey;
-            const theme = themes[themeKey];
-            applyTheme(theme);
-            localStorage.setItem('schedulerTheme', JSON.stringify({ name: themeKey, ...theme }));
-            renderThemeOptions();
-        }
-
-        function applyTheme(theme) {
-            document.documentElement.style.setProperty('--primary-color', theme.primaryColor);
-            document.documentElement.style.setProperty('--primary-dark', theme.primaryDark);
-            document.documentElement.style.setProperty('--background-gradient-start', theme.bgGradientStart);
-            document.documentElement.style.setProperty('--background-gradient-end', theme.bgGradientEnd);
-            
-            // Update color pickers
-            document.getElementById('primaryColor').value = theme.primaryColor;
-            document.getElementById('bgGradientStart').value = theme.bgGradientStart;
-            document.getElementById('bgGradientEnd').value = theme.bgGradientEnd;
-            
-            updateColorPreviews();
-        }
-
-        function setupColorPickers() {
-            document.getElementById('primaryColor').addEventListener('input', updateColorPreviews);
-            document.getElementById('bgGradientStart').addEventListener('input', updateColorPreviews);
-            document.getElementById('bgGradientEnd').addEventListener('input', updateColorPreviews);
-        }
-
-        function updateColorPreviews() {
-            const primary = document.getElementById('primaryColor').value;
-            const bgStart = document.getElementById('bgGradientStart').value;
-            const bgEnd = document.getElementById('bgGradientEnd').value;
-            
-            document.getElementById('primaryPreview').style.background = primary;
-            document.getElementById('bgStartPreview').style.background = bgStart;
-            document.getElementById('bgEndPreview').style.background = bgEnd;
-        }
-
-        function applyCustomTheme() {
-            const customTheme = {
-                name: 'custom',
-                primaryColor: document.getElementById('primaryColor').value,
-                primaryDark: adjustColor(document.getElementById('primaryColor').value, -20),
-                bgGradientStart: document.getElementById('bgGradientStart').value,
-                bgGradientEnd: document.getElementById('bgGradientEnd').value
-            };
-            
-            currentTheme = 'custom';
-            applyTheme(customTheme);
-            localStorage.setItem('schedulerTheme', JSON.stringify(customTheme));
-            renderThemeOptions();
-            alert('Custom theme applied! 🎨');
-        }
-
-        function adjustColor(color, percent) {
-            const num = parseInt(color.replace('#', ''), 16);
-            const amt = Math.round(2.55 * percent);
-            const R = (num >> 16) + amt;
-            const G = (num >> 8 & 0x00FF) + amt;
-            const B = (num & 0x0000FF) + amt;
-            return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-                (B < 255 ? B < 1 ? 0 : B : 255))
-                .toString(16).slice(1);
-        }
-
-        function resetToDefault() {
-            if (confirm('Are you sure you want to reset to the default theme?')) {
-                currentTheme = 'default';
-                selectTheme('default');
-                alert('Theme reset to default! 🔄');
-            }
-        }
-
-        // Tab Navigation
         function setupTabs() {
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Remove active class from all tabs
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    // Add active class to clicked tab
-                    btn.classList.add('active');
-                    const tabId = btn.dataset.tab;
-                    document.getElementById(tabId).classList.add('active');
-                    
-                    // Refresh content
-                    if (tabId === 'tasks') {
-                        renderAllTasks();
-                    } else if (tabId === 'calendar') {
-                        renderCalendar();
-                    } else if (tabId === 'profile') {
-                        updateProfileDisplay();
-                    } else if (tabId === 'settings') {
-                        renderThemeOptions();
-                    }
-                });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => openTab(btn.dataset.tab));
             });
         }
 
-        // LocalStorage Functions
-        function loadTasks() {
-            const stored = localStorage.getItem('schedulerTasks');
-            tasks = stored ? JSON.parse(stored) : [];
+        function openTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            document.getElementById(tab).classList.add('active');
         }
 
-        function saveTasks() {
-            localStorage.setItem('schedulerTasks', JSON.stringify(tasks));
-        }
-
-        // Calendar Rendering
         function renderCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            
-            // Update header
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'];
-            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
-            
-            // Get first day of month and number of days
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('monthYear').textContent = `${monthNames[month]} ${year}`;
+
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             const daysInMonth = lastDay.getDate();
-            const startingDayOfWeek = firstDay.getDay();
-            
-            // Get previous month days
-            const prevMonthLastDay = new Date(year, month, 0).getDate();
-            
-            // Build calendar
+            const startDay = firstDay.getDay();
+            const prevMonthDays = new Date(year, month, 0).getDate();
+
             let html = '';
-            
-            // Day headers
-            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            dayHeaders.forEach(day => {
-                html += `<div class="calendar-day-header">${day}</div>`;
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(d => {
+                html += `<div class="cal-header">${d}</div>`;
             });
-            
-            // Previous month days
-            for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-                const day = prevMonthLastDay - i;
-                html += `<div class="calendar-day other-month">
-                    <div class="day-number">${day}</div>
-                </div>`;
+
+            for (let i = startDay - 1; i >= 0; i--) {
+                html += `<div class="cal-day other"><div class="day-num">${prevMonthDays - i}</div></div>`;
             }
-            
-            // Current month days
+
             const today = new Date();
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
                 const dateStr = formatDate(date);
                 const isToday = date.toDateString() === today.toDateString();
-                const dayTasks = getTasksForDate(dateStr);
-                const hasTasks = dayTasks.length > 0;
-                
-                let classes = 'calendar-day';
-                if (isToday) classes += ' today';
-                if (hasTasks) classes += ' has-tasks';
-                
-                html += `<div class="${classes}" onclick="selectDate('${dateStr}')">
-                    <div class="day-number">${day}</div>
-                    ${hasTasks ? `<div class="day-task-count">${dayTasks.length} task${dayTasks.length > 1 ? 's' : ''}</div>` : ''}
+                const dayTasks = tasks.filter(t => t.date === dateStr && visibleClients.has(t.clientId));
+                const colors = [...new Set(dayTasks.map(t => clients.find(c => c.id === t.clientId)?.color || '#999'))].slice(0, 3);
+
+                let cls = 'cal-day';
+                if (isToday) cls += ' today';
+                if (dayTasks.length > 0) cls += ' has-tasks';
+
+                html += `<div class="${cls}" onclick="selectDate('${dateStr}')">
+                    <div class="day-num">${day}</div>
+                    ${dayTasks.length > 0 ? `<div class="day-count">${dayTasks.length}</div>` : ''}
+                    ${colors.length > 0 ? `<div class="day-dots">${colors.map(c => `<div class="dot" style="background:${c}"></div>`).join('')}</div>` : ''}
                 </div>`;
             }
-            
-            // Next month days
-            const remainingDays = 42 - (startingDayOfWeek + daysInMonth);
-            for (let day = 1; day <= remainingDays; day++) {
-                html += `<div class="calendar-day other-month">
-                    <div class="day-number">${day}</div>
-                </div>`;
+
+            const remaining = 42 - (startDay + daysInMonth);
+            for (let day = 1; day <= remaining; day++) {
+                html += `<div class="cal-day other"><div class="day-num">${day}</div></div>`;
             }
-            
+
             document.getElementById('calendarGrid').innerHTML = html;
         }
 
-        function changeMonth(direction) {
-            if (direction === 0) {
-                currentDate = new Date();
-            } else {
-                currentDate.setMonth(currentDate.getMonth() + direction);
-            }
+        function changeMonth(dir) {
+            if (dir === 0) currentDate = new Date();
+            else currentDate.setMonth(currentDate.getMonth() + dir);
             renderCalendar();
         }
 
         function selectDate(dateStr) {
             selectedDate = dateStr;
             const date = new Date(dateStr + 'T00:00:00');
-            const formatted = date.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            
-            document.getElementById('selectedDate').textContent = formatted;
-            document.getElementById('dayTasks').style.display = 'block';
-            
-            // Set form date to selected date
+            document.getElementById('dayTasksTitle').textContent = `Tasks - ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
             document.getElementById('taskDate').value = dateStr;
             
-            renderDayTasks(dateStr);
-            
-            // Scroll to tasks
-            document.getElementById('dayTasks').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function renderDayTasks(dateStr) {
-            const dayTasks = getTasksForDate(dateStr);
+            const dayTasks = tasks.filter(t => t.date === dateStr && visibleClients.has(t.clientId));
             const container = document.getElementById('dayTasksList');
             
             if (dayTasks.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <h3>No tasks for this day</h3>
-                        <p>Click "Add New Task" to create one</p>
-                    </div>
-                `;
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No tasks for this day</p></div>';
+            } else {
+                container.innerHTML = dayTasks.map(renderTask).join('');
+            }
+            
+            document.getElementById('dayTasksModal').classList.add('active');
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasksList');
+            if (tasks.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>No tasks yet</p></div>';
                 return;
             }
             
-            // Sort by start time and urgency
-            dayTasks.sort((a, b) => {
-                const timeCompare = a.startTime.localeCompare(b.startTime);
-                if (timeCompare !== 0) return timeCompare;
-                return getUrgencyValue(b.urgency) - getUrgencyValue(a.urgency);
-            });
-            
-            container.innerHTML = dayTasks.map(task => renderTaskItem(task)).join('');
-        }
-
-        // Task Management
-        function getTasksForDate(dateStr) {
-            return tasks.filter(task => task.date === dateStr);
-        }
-
-        function getUrgencyValue(urgency) {
-            const values = { urgent: 4, high: 3, medium: 2, low: 1 };
-            return values[urgency] || 0;
-        }
-
-        function renderTaskItem(task) {
-            const endTime = task.endTime ? ` - ${formatTime(task.endTime)}` : '';
-            const reminderText = task.reminder > 0 ? 
-                `🔔 ${task.reminder >= 1440 ? task.reminder / 1440 + ' day' : task.reminder + ' min'} before` : '';
-            
-            return `
-                <div class="task-item urgency-${task.urgency}">
-                    <div class="task-header">
-                        <div class="task-title">${escapeHtml(task.title)}</div>
-                        <div class="task-urgency ${task.urgency}">${task.urgency}</div>
-                    </div>
-                    ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
-                    <div class="task-meta">
-                        <div class="task-meta-item">📅 ${formatDateDisplay(task.date)}</div>
-                        <div class="task-meta-item">🕐 ${formatTime(task.startTime)}${endTime}</div>
-                        ${reminderText ? `<div class="task-meta-item">${reminderText}</div>` : ''}
-                    </div>
-                    <div class="task-actions">
-                        <button class="btn btn-primary btn-small" onclick="editTask('${task.id}')">Edit</button>
-                        <button class="btn btn-danger btn-small" onclick="deleteTask('${task.id}')">Delete</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderAllTasks() {
-            const container = document.getElementById('allTasksList');
-            let filteredTasks = [...tasks];
-            
-            // Apply filter
-            if (currentFilter === 'upcoming') {
-                const today = new Date().toISOString().split('T')[0];
-                filteredTasks = filteredTasks.filter(task => task.date >= today);
-            } else if (currentFilter !== 'all') {
-                filteredTasks = filteredTasks.filter(task => task.urgency === currentFilter);
-            }
-            
-            if (filteredTasks.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📋</div>
-                        <h3>No tasks found</h3>
-                        <p>Create your first task to get started!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Sort tasks
-            filteredTasks.sort((a, b) => {
-                // First by date
-                const dateCompare = a.date.localeCompare(b.date);
-                if (dateCompare !== 0) return dateCompare;
-                
-                // Then by urgency
-                const urgencyCompare = getUrgencyValue(b.urgency) - getUrgencyValue(a.urgency);
-                if (urgencyCompare !== 0) return urgencyCompare;
-                
-                // Finally by start time
+            const sorted = [...tasks].sort((a, b) => {
+                if (a.date !== b.date) return a.date.localeCompare(b.date);
                 return a.startTime.localeCompare(b.startTime);
             });
             
-            container.innerHTML = filteredTasks.map(task => renderTaskItem(task)).join('');
+            container.innerHTML = sorted.map(renderTask).join('');
         }
 
-        function filterTasks(filter) {
-            currentFilter = filter;
+        function renderTask(task) {
+            const client = clients.find(c => c.id === task.clientId);
+            const urgencyColors = { low: '#27ae60', medium: '#f39c12', high: '#e67e22', urgent: '#e74c3c' };
             
-            // Update active filter button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.filter === filter);
-            });
-            
-            renderAllTasks();
+            return `<div class="task-item urgency-${task.urgency}">
+                <div class="task-header">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-badges">
+                        <div class="badge" style="background:${client?.color || '#999'}">${client?.name || 'Unknown'}</div>
+                        <div class="badge" style="background:${urgencyColors[task.urgency]}">${task.urgency}</div>
+                    </div>
+                </div>
+                ${task.description ? `<div style="color: var(--text-light); margin: 8px 0;">${task.description}</div>` : ''}
+                <div class="task-meta">
+                    <span>📅 ${new Date(task.date + 'T00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    <span>🕐 ${formatTime(task.startTime)}</span>
+                    ${task.reminder > 0 ? `<span>🔔 ${task.reminder} min before</span>` : ''}
+                </div>
+                <div class="task-actions">
+                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="editTask('${task.id}')">Edit</button>
+                    <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem;" onclick="deleteTask('${task.id}')">Delete</button>
+                </div>
+            </div>`;
         }
 
-        // Modal Functions
-        function openAddTaskModal() {
-            editingTaskId = null;
-            document.getElementById('modalTitle').textContent = 'Add New Task';
-            document.getElementById('taskForm').reset();
-            
-            // Set default date (selected date or today)
-            if (selectedDate) {
-                document.getElementById('taskDate').value = selectedDate;
-            } else {
-                document.getElementById('taskDate').valueAsDate = new Date();
+        function renderClients() {
+            const container = document.getElementById('clientsList');
+            if (clients.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No clients yet</p></div>';
+                return;
             }
             
-            // Set default time (next hour)
-            const now = new Date();
-            now.setHours(now.getHours() + 1, 0, 0, 0);
-            document.getElementById('taskStartTime').value = now.toTimeString().slice(0, 5);
-            
+            container.innerHTML = clients.map(client => {
+                const taskCount = tasks.filter(t => t.clientId === client.id).length;
+                return `<div class="client-item">
+                    <div class="client-info">
+                        <div class="client-box" style="background:${client.color}">${client.name[0]}</div>
+                        <div>
+                            <div style="font-weight: 700;">${client.name}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-light);">${taskCount} task${taskCount !== 1 ? 's' : ''}</div>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="editClient('${client.id}')">Edit</button>
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem;" onclick="deleteClient('${client.id}')">Delete</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderClientPills() {
+            const container = document.getElementById('clientPills');
+            container.innerHTML = `<div class="pill ${visibleClients.size === clients.length ? 'active' : ''}" onclick="toggleClient('all')">🌐 All</div>` +
+                clients.map(c => `<div class="pill ${visibleClients.has(c.id) ? 'active' : ''}" onclick="toggleClient('${c.id}')">
+                    <span class="dot" style="background:${c.color}"></span>${c.name}
+                </div>`).join('');
+        }
+
+        function toggleClient(id) {
+            if (id === 'all') {
+                visibleClients = visibleClients.size === clients.length ? new Set() : new Set(clients.map(c => c.id));
+            } else {
+                visibleClients.has(id) ? visibleClients.delete(id) : visibleClients.add(id);
+            }
+            renderClientPills();
+            renderCalendar();
+        }
+
+        function toggleAllClients() {
+            visibleClients = visibleClients.size > 0 ? new Set() : new Set(clients.map(c => c.id));
+            document.getElementById('toggleText').textContent = visibleClients.size > 0 ? 'Hide All' : 'Show All';
+            renderClientPills();
+            renderCalendar();
+        }
+
+        function openTaskModal() {
+            editingTaskId = null;
+            document.getElementById('taskModalTitle').textContent = 'Add Task';
+            document.getElementById('taskId').value = '';
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDesc').value = '';
+            document.getElementById('taskDate').value = selectedDate || formatDate(new Date());
+            document.getElementById('taskStart').value = new Date().getHours() + 1 + ':00';
+            document.getElementById('taskEnd').value = '';
+            document.getElementById('taskUrgency').value = 'medium';
+            document.getElementById('taskReminder').value = '15';
             document.getElementById('taskModal').classList.add('active');
         }
 
-        function editTask(taskId) {
-            const task = tasks.find(t => t.id === taskId);
+        function editTask(id) {
+            const task = tasks.find(t => t.id === id);
             if (!task) return;
             
-            editingTaskId = taskId;
-            document.getElementById('modalTitle').textContent = 'Edit Task';
-            document.getElementById('taskId').value = taskId;
+            editingTaskId = id;
+            document.getElementById('taskModalTitle').textContent = 'Edit Task';
+            document.getElementById('taskId').value = id;
             document.getElementById('taskTitle').value = task.title;
-            document.getElementById('taskDescription').value = task.description || '';
+            document.getElementById('taskClient').value = task.clientId;
+            document.getElementById('taskDesc').value = task.description || '';
             document.getElementById('taskDate').value = task.date;
-            document.getElementById('taskStartTime').value = task.startTime;
-            document.getElementById('taskEndTime').value = task.endTime || '';
+            document.getElementById('taskStart').value = task.startTime;
+            document.getElementById('taskEnd').value = task.endTime || '';
             document.getElementById('taskUrgency').value = task.urgency;
             document.getElementById('taskReminder').value = task.reminder;
-            
             document.getElementById('taskModal').classList.add('active');
         }
 
-        function closeTaskModal() {
-            document.getElementById('taskModal').classList.remove('active');
-            document.getElementById('taskForm').reset();
-            editingTaskId = null;
-        }
-
-        function saveTask(event) {
-            event.preventDefault();
-            
-            const taskData = {
-                id: editingTaskId || generateId(),
+        function saveTask(e) {
+            e.preventDefault();
+            const task = {
+                id: editingTaskId || Date.now().toString(),
                 title: document.getElementById('taskTitle').value,
-                description: document.getElementById('taskDescription').value,
+                clientId: document.getElementById('taskClient').value,
+                description: document.getElementById('taskDesc').value,
                 date: document.getElementById('taskDate').value,
-                startTime: document.getElementById('taskStartTime').value,
-                endTime: document.getElementById('taskEndTime').value,
+                startTime: document.getElementById('taskStart').value,
+                endTime: document.getElementById('taskEnd').value,
                 urgency: document.getElementById('taskUrgency').value,
                 reminder: parseInt(document.getElementById('taskReminder').value)
             };
             
             if (editingTaskId) {
-                // Update existing task
                 const index = tasks.findIndex(t => t.id === editingTaskId);
-                if (index !== -1) {
-                    // Cancel old notification
-                    cancelNotification(editingTaskId);
-                    tasks[index] = taskData;
-                }
+                tasks[index] = task;
             } else {
-                // Add new task
-                tasks.push(taskData);
+                tasks.push(task);
             }
             
-            saveTasks();
-            scheduleNotification(taskData);
-            closeTaskModal();
+            saveData();
+            closeModal('taskModal');
             renderCalendar();
-            renderAllTasks();
+            renderTasks();
             
             if (selectedDate) {
-                renderDayTasks(selectedDate);
+                selectDate(selectedDate);
             }
         }
 
-        function deleteTask(taskId) {
-            if (!confirm('Are you sure you want to delete this task?')) return;
-            
-            cancelNotification(taskId);
-            tasks = tasks.filter(t => t.id !== taskId);
-            saveTasks();
-            renderCalendar();
-            renderAllTasks();
-            
-            if (selectedDate) {
-                renderDayTasks(selectedDate);
+        function deleteTask(id) {
+            if (confirm('Delete this task?')) {
+                tasks = tasks.filter(t => t.id !== id);
+                saveData();
+                renderCalendar();
+                renderTasks();
+                if (selectedDate) selectDate(selectedDate);
             }
         }
 
-        // Notification Functions
-        function checkNotificationPermission() {
-            if (!('Notification' in window)) {
-                console.log('Notifications not supported');
-                return;
-            }
-            
-            if (Notification.permission === 'default') {
-                document.getElementById('notificationBanner').style.display = 'flex';
-            }
+        function openClientModal() {
+            editingClientId = null;
+            document.getElementById('clientModalTitle').textContent = 'Add Client';
+            document.getElementById('clientId').value = '';
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientEmail').value = '';
+            document.getElementById('clientColor').value = '#' + Math.floor(Math.random()*16777215).toString(16);
+            document.getElementById('clientModal').classList.add('active');
         }
 
-        function requestNotificationPermission() {
-            if (!('Notification' in window)) {
-                alert('Notifications are not supported in this browser');
-                return;
-            }
+        function editClient(id) {
+            const client = clients.find(c => c.id === id);
+            if (!client) return;
             
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    document.getElementById('notificationBanner').style.display = 'none';
-                    new Notification('Notifications Enabled! 🎉', {
-                        body: 'You will now receive reminders for your tasks.',
-                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📅</text></svg>'
-                    });
-                    scheduleAllNotifications();
-                } else {
-                    alert('Notification permission denied. You won\'t receive reminders.');
-                }
-            });
+            editingClientId = id;
+            document.getElementById('clientModalTitle').textContent = 'Edit Client';
+            document.getElementById('clientId').value = id;
+            document.getElementById('clientName').value = client.name;
+            document.getElementById('clientEmail').value = client.email || '';
+            document.getElementById('clientColor').value = client.color;
+            document.getElementById('clientModal').classList.add('active');
         }
 
-        function scheduleNotification(task) {
-            if (!('Notification' in window) || Notification.permission !== 'granted' || task.reminder === 0) {
-                return;
-            }
+        function saveClient(e) {
+            e.preventDefault();
+            const client = {
+                id: editingClientId || Date.now().toString(),
+                name: document.getElementById('clientName').value,
+                email: document.getElementById('clientEmail').value,
+                color: document.getElementById('clientColor').value
+            };
             
-            const taskDateTime = new Date(`${task.date}T${task.startTime}`);
-            const reminderTime = new Date(taskDateTime.getTime() - (task.reminder * 60 * 1000));
-            const now = new Date();
-            
-            // Don't schedule if reminder time has passed
-            if (reminderTime <= now) {
-                return;
-            }
-            
-            const delay = reminderTime.getTime() - now.getTime();
-            
-            // Cancel existing notification for this task
-            cancelNotification(task.id);
-            
-            // Schedule new notification
-            const timeoutId = setTimeout(() => {
-                showNotification(task);
-                delete scheduledNotifications[task.id];
-            }, delay);
-            
-            scheduledNotifications[task.id] = timeoutId;
-        }
-
-        function scheduleAllNotifications() {
-            // Clear all existing scheduled notifications
-            Object.values(scheduledNotifications).forEach(timeoutId => {
-                clearTimeout(timeoutId);
-            });
-            scheduledNotifications = {};
-            
-            // Schedule notifications for all upcoming tasks
-            tasks.forEach(task => {
-                scheduleNotification(task);
-            });
-        }
-
-        function cancelNotification(taskId) {
-            if (scheduledNotifications[taskId]) {
-                clearTimeout(scheduledNotifications[taskId]);
-                delete scheduledNotifications[taskId];
-            }
-        }
-
-        function showNotification(task) {
-            const title = `🔔 Reminder: ${task.title}`;
-            const body = task.description || `Task starts at ${formatTime(task.startTime)}`;
-            
-            if ('Notification' in window && Notification.permission === 'granted') {
-                const notification = new Notification(title, {
-                    body: body,
-                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📅</text></svg>',
-                    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔔</text></svg>',
-                    requireInteraction: true,
-                    tag: task.id
-                });
-                
-                notification.onclick = () => {
-                    window.focus();
-                    notification.close();
-                };
+            if (editingClientId) {
+                const index = clients.findIndex(c => c.id === editingClientId);
+                clients[index] = client;
             } else {
-                // Fallback to alert if notifications not available
-                alert(`${title}\n\n${body}`);
+                clients.push(client);
+                visibleClients.add(client.id);
             }
+            
+            saveData();
+            closeModal('clientModal');
+            renderClients();
+            renderClientPills();
+            updateClientSelect();
+            renderCalendar();
         }
 
-        // Utility Functions
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        function deleteClient(id) {
+            const taskCount = tasks.filter(t => t.clientId === id).length;
+            if (taskCount > 0 && !confirm(`This client has ${taskCount} task(s). Delete anyway?`)) return;
+            
+            clients = clients.filter(c => c.id !== id);
+            visibleClients.delete(id);
+            saveData();
+            renderClients();
+            renderClientPills();
+            updateClientSelect();
+            renderCalendar();
+        }
+
+        function updateClientSelect() {
+            const select = document.getElementById('taskClient');
+            select.innerHTML = '<option value="">Select client</option>' + 
+                clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+
+        function saveProfile() {
+            profile.name = document.getElementById('profileName').value || 'Guest';
+            profile.isGuest = false;
+            saveData();
+            updateProfile();
+            alert('Profile saved!');
+        }
+
+        function selectAvatar(emoji) {
+            profile.avatar = emoji;
+            saveData();
+            updateProfile();
+        }
+
+        function updateProfile() {
+            document.getElementById('userName').textContent = profile.name;
+            document.getElementById('avatar').textContent = profile.avatar;
+            document.getElementById('profileName').value = profile.name;
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
         }
 
         function formatDate(date) {
             return date.toISOString().split('T')[0];
         }
 
-        function formatDateDisplay(dateStr) {
-            const date = new Date(dateStr + 'T00:00:00');
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        function formatTime(time) {
+            const [h, m] = time.split(':');
+            const hour = parseInt(h);
+            return `${hour % 12 || 12}:${m} ${hour >= 12 ? 'PM' : 'AM'}`;
         }
 
-        function formatTime(timeStr) {
-            if (!timeStr) return '';
-            const [hours, minutes] = timeStr.split(':');
-            const hour = parseInt(hours);
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            const displayHour = hour % 12 || 12;
-            return `${displayHour}:${minutes} ${ampm}`;
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('taskModal').addEventListener('click', (e) => {
-            if (e.target.id === 'taskModal') {
-                closeTaskModal();
-            }
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', e => {
+                if (e.target === modal) closeModal(modal.id);
+            });
         });
 
-        // Register Service Worker (for PWA support)
-        if ('serviceWorker' in navigator) {
-            // Create a minimal service worker inline
-            const swCode = `
-                self.addEventListener('install', (e) => {
-                    self.skipWaiting();
-                });
-                
-                self.addEventListener('activate', (e) => {
-                    self.clients.claim();
-                });
-            `;
-            
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            
-            navigator.serviceWorker.register(swUrl).catch(() => {
-                console.log('Service Worker registration failed (this is okay)');
-            });
-        }
-
-        // Initialize app when DOM is loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        init();
     </script>
 </body>
 </html>
