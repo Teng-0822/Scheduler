@@ -24,7 +24,8 @@
         .code-icon{font-size:5em;margin-bottom:20px}
         .code-title{font-size:clamp(1.8rem,4vw,2.3rem);color:var(--primary-color);margin-bottom:15px;font-weight:700}
         .code-subtitle{color:#666;margin-bottom:30px;line-height:1.6}
-        .name-input{width:100%;padding:15px;border:2px solid #ddd;border-radius:12px;font-size:1.1em;margin-bottom:15px;transition:0.3s}
+        .name-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px}
+        .name-input{width:100%;padding:15px;border:2px solid #ddd;border-radius:12px;font-size:1.1em;transition:0.3s}
         .name-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(74,144,226,0.1)}
         .code-input{width:100%;padding:18px;border:3px solid #ddd;border-radius:12px;font-size:1.4em;text-align:center;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;margin-bottom:10px;font-family:'Courier New',monospace;transition:0.3s}
         .code-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 4px rgba(74,144,226,0.1)}
@@ -42,7 +43,10 @@
             <div class="code-icon">🔐</div>
             <h2 class="code-title">Access Code Required</h2>
             <p class="code-subtitle">Enter your unique access code to continue</p>
-            <input type="text" id="nameInput" class="name-input" placeholder="Enter your full name" maxlength="100">
+            <div class="name-row">
+                <input type="text" id="givenNameInput" class="name-input" placeholder="Given Name" maxlength="50">
+                <input type="text" id="lastNameInput" class="name-input" placeholder="Last Name" maxlength="50">
+            </div>
             <input type="text" id="codeInput" class="code-input" placeholder="ENTER CODE" maxlength="20">
             <div id="codeError" class="code-error"></div>
             <button id="codeBtn" class="code-btn">VERIFY & CONTINUE</button>
@@ -245,27 +249,6 @@
                 <div class="settings-section">
                     <h3>🔄 Reset</h3>
                     <button class="btn btn-secondary btn-full" onclick="resetToDefault()">Reset to Default</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Welcome Modal -->
-    <div id="welcomeModal" class="modal welcome-modal">
-        <div class="modal-content">
-            <div class="welcome-icon">👋</div>
-            <h2>Welcome to VA Scheduler!</h2>
-            <p>Choose how you'd like to use this app:</p>
-            <div class="mode-buttons">
-                <div class="mode-btn" onclick="selectMode('guest')">
-                    <div class="mode-btn-icon">🚀</div>
-                    <div class="mode-btn-title">Guest Mode</div>
-                    <div class="mode-btn-desc">Quick start with default settings</div>
-                </div>
-                <div class="mode-btn" onclick="selectMode('personal')">
-                    <div class="mode-btn-icon">👤</div>
-                    <div class="mode-btn-title">Personal Mode</div>
-                    <div class="mode-btn-desc">Set up your profile with your name and preferences</div>
                 </div>
             </div>
         </div>
@@ -1385,7 +1368,7 @@ function showToast(message, type = 'warning') {
 
 
 // CODE VERIFICATION
-const API_URL = 'https://script.google.com/macros/s/AKfycbwoUeFOMetfUe0E0IG7L-eLAi8URW96etYzN4uNgWCrX5hUCXitBfa41AgcKIZPhcFf/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxgqSuVElhn3DNsqxG2I-GXZbjUgMFrqtUzKFlqVk-jeON6wjv6LLhswk8a5u2SnUFakQ/exec';
 
 window.addEventListener('DOMContentLoaded', function() {
     // Check if already verified
@@ -1393,7 +1376,7 @@ window.addEventListener('DOMContentLoaded', function() {
         // Check if code was revoked
         checkRevoke();
     } else {
-        document.getElementById('nameInput').focus();
+        document.getElementById('givenNameInput').focus();
     }
     
     // Enter key support
@@ -1406,18 +1389,26 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 async function verifyAccessCode() {
-    const nameInput = document.getElementById('nameInput');
+    const givenNameInput = document.getElementById('givenNameInput');
+    const lastNameInput = document.getElementById('lastNameInput');
     const codeInput = document.getElementById('codeInput');
     const error = document.getElementById('codeError');
     const btn = document.getElementById('codeBtn');
-    const name = nameInput.value.trim();
+    const givenName = givenNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
     const code = codeInput.value.trim().toUpperCase();
     
     error.textContent = '';
     
-    if (!name) {
-        error.textContent = 'Please enter your full name';
-        nameInput.focus();
+    if (!givenName) {
+        error.textContent = 'Please enter your given name';
+        givenNameInput.focus();
+        return;
+    }
+    
+    if (!lastName) {
+        error.textContent = 'Please enter your last name';
+        lastNameInput.focus();
         return;
     }
     
@@ -1434,7 +1425,7 @@ async function verifyAccessCode() {
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {'Content-Type': 'text/plain'},
-            body: JSON.stringify({action: 'verify', code: code, name: name}),
+            body: JSON.stringify({action: 'verify', code: code, givenName: givenName, lastName: lastName}),
             redirect: 'follow'
         });
         
@@ -1445,7 +1436,11 @@ async function verifyAccessCode() {
             // Success!
             localStorage.setItem('verified', 'true');
             localStorage.setItem('code', code);
-            localStorage.setItem('userName', name);
+            localStorage.setItem('givenName', givenName);
+            localStorage.setItem('lastName', lastName);
+            
+            // Update profile display
+            updateProfile(lastName, givenName);
             btn.textContent = '✓ SUCCESS!';
             btn.style.background = 'var(--success-color)';
             showToast(data.message, 'success');
@@ -1493,31 +1488,59 @@ async function checkRevoke() {
             showToast('⚠️ Your access has been revoked. Please contact admin.', 'warning');
             localStorage.removeItem('verified');
             localStorage.removeItem('code');
-            localStorage.removeItem('userName');
+            localStorage.removeItem('givenName');
+            localStorage.removeItem('lastName');
             showCodeModal();
         } else {
             // Still valid, show app
             document.getElementById('codeModal').style.display = 'none';
             document.querySelector('.container').classList.remove('hide-app');
+            
+            // Update profile from localStorage
+            const lastName = localStorage.getItem('lastName');
+            const givenName = localStorage.getItem('givenName');
+            if (lastName && givenName) {
+                updateProfile(lastName, givenName);
+            }
+            
+            // Start periodic check every 5 minutes
+            setInterval(checkRevoke, 5 * 60 * 1000);
         }
     } catch (err) {
         // If offline or error, allow access anyway (offline mode)
         document.getElementById('codeModal').style.display = 'none';
         document.querySelector('.container').classList.remove('hide-app');
+        
+        // Update profile from localStorage
+        const lastName = localStorage.getItem('lastName');
+        const givenName = localStorage.getItem('givenName');
+        if (lastName && givenName) {
+            updateProfile(lastName, givenName);
+        }
     }
 }
 
 function showCodeModal() {
     document.getElementById('codeModal').style.display = 'flex';
     document.querySelector('.container').classList.add('hide-app');
-    document.getElementById('nameInput').focus();
+    document.getElementById('givenNameInput').focus();
+}
+
+function updateProfile(lastName, givenName) {
+    // Update profile name display
+    const fullName = lastName + ', ' + givenName;
+    document.querySelector('.profile-name').textContent = fullName;
+    
+    // Update avatar with first letter of last name
+    document.querySelector('.profile-avatar').textContent = lastName.charAt(0).toUpperCase();
 }
 
 function logoutCode() {
     if (confirm('Logout? You will need a new access code.')) {
         localStorage.removeItem('verified');
         localStorage.removeItem('code');
-        localStorage.removeItem('userName');
+        localStorage.removeItem('givenName');
+        localStorage.removeItem('lastName');
         location.reload();
     }
 }
