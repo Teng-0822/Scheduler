@@ -18,10 +18,36 @@
         @media (max-width:768px){
             .toast{bottom:10px;right:10px;left:10px;max-width:none}
         }
+
+        #codeModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center}
+        .code-box{background:#fff;padding:50px;border-radius:20px;max-width:500px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:slideUp 0.4s}
+        .code-icon{font-size:5em;margin-bottom:20px}
+        .code-title{font-size:clamp(1.8rem,4vw,2.3rem);color:var(--primary-color);margin-bottom:15px;font-weight:700}
+        .code-subtitle{color:#666;margin-bottom:30px;line-height:1.6}
+        .code-input{width:100%;padding:18px;border:3px solid #ddd;border-radius:12px;font-size:1.4em;text-align:center;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;margin-bottom:10px;font-family:'Courier New',monospace;transition:0.3s}
+        .code-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 4px rgba(74,144,226,0.1)}
+        .code-error{color:var(--danger-color);margin-bottom:15px;font-weight:600;min-height:24px;font-size:0.95em}
+        .code-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--primary-color),var(--primary-dark));color:#fff;border:none;border-radius:12px;font-size:1.15em;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:0.3s}
+        .code-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(74,144,226,0.4)}
+        .code-btn:disabled{opacity:0.6;cursor:not-allowed}
+        .hide-app{display:none!important}
+
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="codeModal">
+        <div class="code-box">
+            <div class="code-icon">🔐</div>
+            <h2 class="code-title">Access Code Required</h2>
+            <p class="code-subtitle">Enter your unique access code to continue</p>
+            <input type="text" id="codeInput" class="code-input" placeholder="ENTER CODE" maxlength="20">
+            <div id="codeError" class="code-error"></div>
+            <button id="codeBtn" class="code-btn">VERIFY & CONTINUE</button>
+        </div>
+    </div>
+
+
+    <div class="container hide-app">
         <header>
             <div class="header-content">
                 <div class="header-left">
@@ -32,7 +58,7 @@
                 <div class="header-right">
                     <div class="profile-section" onclick="openProfileModal()">
                         <div class="profile-avatar" id="headerAvatar">👤</div>
-                        <div class="profile-name" id="headerName"> User</div>
+                        <div class="profile-name" id="headerName">Guest User</div>
                     </div>
                     <button class="settings-btn" onclick="openSettingsModal()">⚙️</button>
                 </div>
@@ -228,7 +254,8 @@
             <h2>Welcome to VA Scheduler!</h2>
             <p>Choose how you'd like to use this app:</p>
             <div class="mode-buttons">
-                <div class="mode-btn" onclick="selectMode('')">
+                <div class="mode-btn" onclick="selectMode('guest')">
+                    <div class="mode-btn-icon">🚀</div>
                     <div class="mode-btn-title">Guest Mode</div>
                     <div class="mode-btn-desc">Quick start with default settings</div>
                 </div>
@@ -1351,6 +1378,93 @@ function showToast(message, type = 'warning') {
         toast.classList.remove('show');
     }, 3000);
 }
+
+
+
+// CODE VERIFICATION
+const API_URL = 'https://script.google.com/macros/s/AKfycbwvB20Z7J8W5Igg1la-9Bq84u8XXCTP96Cnr7VjBnNn38mvgTXIaRO_E_ki1_-MOTit2A/exec';
+
+window.addEventListener('DOMContentLoaded', function() {
+    // Check if already verified
+    if (localStorage.getItem('verified') === 'true') {
+        document.getElementById('codeModal').style.display = 'none';
+        document.querySelector('.container').classList.remove('hide-app');
+    } else {
+        document.getElementById('codeInput').focus();
+    }
+    
+    // Enter key support
+    document.getElementById('codeInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') verifyAccessCode();
+    });
+    
+    // Button click
+    document.getElementById('codeBtn').addEventListener('click', verifyAccessCode);
+});
+
+async function verifyAccessCode() {
+    const input = document.getElementById('codeInput');
+    const error = document.getElementById('codeError');
+    const btn = document.getElementById('codeBtn');
+    const code = input.value.trim().toUpperCase();
+    
+    error.textContent = '';
+    
+    if (!code) {
+        error.textContent = 'Please enter a code';
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.textContent = 'VERIFYING...';
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'text/plain'},
+            body: JSON.stringify({action: 'verify', code: code}),
+            redirect: 'follow'
+        });
+        
+        const text = await response.text();
+        const data = JSON.parse(text);
+        
+        if (data.success) {
+            // Success!
+            localStorage.setItem('verified', 'true');
+            localStorage.setItem('code', code);
+            btn.textContent = '✓ SUCCESS!';
+            btn.style.background = 'var(--success-color)';
+            showToast(data.message, 'success');
+            
+            setTimeout(() => {
+                document.getElementById('codeModal').style.display = 'none';
+                document.querySelector('.container').classList.remove('hide-app');
+            }, 1200);
+        } else {
+            // Error
+            error.textContent = data.message;
+            showToast(data.message, 'error');
+            btn.disabled = false;
+            btn.textContent = 'VERIFY & CONTINUE';
+        }
+        
+    } catch (err) {
+        error.textContent = 'Connection error. Check internet and try again.';
+        showToast('❌ Connection error', 'error');
+        btn.disabled = false;
+        btn.textContent = 'VERIFY & CONTINUE';
+    }
+}
+
+function logoutCode() {
+    if (confirm('Logout? You will need a new access code.')) {
+        localStorage.removeItem('verified');
+        localStorage.removeItem('code');
+        location.reload();
+    }
+}
+
 
 // Start the clock
 setInterval(updateClock, 1000);
