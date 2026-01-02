@@ -229,6 +229,7 @@
             <p>Choose how you'd like to use this app:</p>
             <div class="mode-buttons">
                 <div class="mode-btn" onclick="selectMode('guest')">
+                    <div class="mode-btn-icon">🚀</div>
                     <div class="mode-btn-title">Guest Mode</div>
                     <div class="mode-btn-desc">Quick start with default settings</div>
                 </div>
@@ -1280,7 +1281,12 @@ function showNotification(task) {
 
 // Utility Functions
 function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
-function formatDate(date) { return date.toISOString().split('T')[0]; }
+function formatDate(date) { 
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 function formatDateDisplay(dateStr) {
     const date = new Date(dateStr + 'T00:00:00');
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
