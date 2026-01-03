@@ -96,7 +96,7 @@
             </div>
             <input type="text" id="codeInput" class="code-input" placeholder="ENTER CODE" maxlength="20">
             <div id="codeError" class="code-error"></div>
-            <button id="codeBtn" class="code-btn">VERIFY & CONTINUE</button>
+            <button id="codeBtn" class="code-btn" onclick="verifyAccessCode()">VERIFY & CONTINUE</button>
         </div>
     </div>
 
@@ -1614,7 +1614,17 @@ function switchTab(tabName) {
 
 
 window.addEventListener('DOMContentLoaded', function() {
-    // Test localStorage
+    
+    // Check API URL
+    console.log('=== API CONFIGURATION ===');
+    console.log('API URL:', API_URL);
+    if (!API_URL || API_URL.includes('YOUR_')) {
+        console.error('❌ API URL not configured!');
+        alert('Error: API URL not configured. Please update the Google Script URL.');
+    }
+    console.log('========================');
+    
+// Test localStorage
     testLocalStorage();
     
     // Log current storage
@@ -1632,8 +1642,18 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('givenNameInput').focus();
     }
     
-    // Enter key support
-    document.getElementById('codeInput').addEventListener('keypress', function(e) {
+    
+    // Backup: Add event listener to verify button
+    const verifyBtn = document.getElementById('codeBtn');
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', verifyAccessCode);
+        console.log('✅ Verify button event listener attached');
+    } else {
+        console.error('❌ Verify button not found!');
+    }
+    
+    // Also allow Enter key on inputs
+document.getElementById('codeInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') verifyAccessCode();
     });
     
@@ -1675,6 +1695,9 @@ async function verifyAccessCode() {
     btn.textContent = 'VERIFYING...';
     
     try {
+        console.log('🔍 Verifying code:', code);
+        console.log('📡 API URL:', API_URL);
+        
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {'Content-Type': 'text/plain'},
@@ -1682,8 +1705,12 @@ async function verifyAccessCode() {
             redirect: 'follow'
         });
         
+        console.log('📥 Response status:', response.status);
         const text = await response.text();
+        console.log('📄 Response text:', text);
+        
         const data = JSON.parse(text);
+        console.log('✅ Parsed data:', data);
         
         if (data.success) {
             // Success!
@@ -1711,8 +1738,12 @@ async function verifyAccessCode() {
         }
         
     } catch (err) {
-        error.textContent = 'Connection error. Check internet and try again.';
-        showToast('❌ Connection error', 'error');
+        console.error('❌ Verification error:', err);
+        console.error('Error details:', err.message);
+        console.error('Error stack:', err.stack);
+        
+        error.textContent = 'Connection error: ' + err.message;
+        showToast('❌ ' + err.message, 'error');
         btn.disabled = false;
         btn.textContent = 'VERIFY & CONTINUE';
     }
