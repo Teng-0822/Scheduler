@@ -375,166 +375,6 @@
     <div id="toastNotification" class="toast"></div>
 
     <script>
-
-// ==========================================
-// INDEXEDDB STORAGE (iOS-friendly)
-// ==========================================
-
-class StorageDB {
-    constructor() {
-        this.dbName = 'SchedulerDB';
-        this.dbVersion = 1;
-        this.db = null;
-    }
-    
-    async init() {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open(this.dbName, this.dbVersion);
-            
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => {
-                this.db = request.result;
-                resolve();
-            };
-            
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                
-                // Create stores if they don't exist
-                if (!db.objectStoreNames.contains('tasks')) {
-                    db.createObjectStore('tasks', { keyPath: 'id' });
-                }
-                if (!db.objectStoreNames.contains('clients')) {
-                    db.createObjectStore('clients', { keyPath: 'id' });
-                }
-                if (!db.objectStoreNames.contains('settings')) {
-                    db.createObjectStore('settings', { keyPath: 'key' });
-                }
-            };
-        });
-    }
-    
-    async saveTasks(tasks) {
-        const tx = this.db.transaction(['tasks'], 'readwrite');
-        const store = tx.objectStore('tasks');
-        
-        // Clear existing
-        await store.clear();
-        
-        // Add all tasks
-        for (const task of tasks) {
-            await store.put(task);
-        }
-        
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    }
-    
-    async getTasks() {
-        const tx = this.db.transaction(['tasks'], 'readonly');
-        const store = tx.objectStore('tasks');
-        const request = store.getAll();
-        
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => reject(request.error);
-        });
-    }
-    
-    async saveClients(clients) {
-        const tx = this.db.transaction(['clients'], 'readwrite');
-        const store = tx.objectStore('clients');
-        
-        await store.clear();
-        
-        for (const client of clients) {
-            await store.put(client);
-        }
-        
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    }
-    
-    async getClients() {
-        const tx = this.db.transaction(['clients'], 'readonly');
-        const store = tx.objectStore('clients');
-        const request = store.getAll();
-        
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result || []);
-            request.onerror = () => reject(request.error);
-        });
-    }
-    
-    async saveSetting(key, value) {
-        const tx = this.db.transaction(['settings'], 'readwrite');
-        const store = tx.objectStore('settings');
-        await store.put({ key: key, value: value });
-        
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    }
-    
-    async getSetting(key) {
-        const tx = this.db.transaction(['settings'], 'readonly');
-        const store = tx.objectStore('settings');
-        const request = store.get(key);
-        
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result ? request.result.value : null);
-            request.onerror = () => reject(request.error);
-        });
-    }
-}
-
-const storageDB = new StorageDB();
-
-// Wrapper functions for backward compatibility
-async function loadTasks() {
-    try {
-        return await storageDB.getTasks();
-    } catch (e) {
-        console.error('Error loading tasks:', e);
-        return [];
-    }
-}
-
-async function saveTasks() {
-    try {
-        await storageDB.saveTasks(tasks);
-        // Also backup to localStorage as fallback
-        localStorage.setItem('schedulerTasks', JSON.stringify(tasks));
-    } catch (e) {
-        console.error('Error saving tasks:', e);
-    }
-}
-
-async function loadClients() {
-    try {
-        return await storageDB.getClients();
-    } catch (e) {
-        console.error('Error loading clients:', e);
-        return [];
-    }
-}
-
-async function saveClients() {
-    try {
-        await storageDB.saveClients(clients);
-        // Also backup to localStorage as fallback
-        localStorage.setItem('schedulerClients', JSON.stringify(clients));
-    } catch (e) {
-        console.error('Error saving clients:', e);
-    }
-}
-
-
 // =============================================================================
 // COMPLETE JAVASCRIPT CODE FOR VIRTUAL ASSISTANT SCHEDULER
 // =============================================================================
@@ -632,7 +472,9 @@ function loadClients() {
     clients = stored ? JSON.parse(stored) : [];
 }
 
-// saveClients is now async (see top of file)
+function saveClients() {
+    localStorage.setItem('schedulerClients', JSON.stringify(clients));
+}
 
 function openAddClientModal() {
     editingClientId = null;
@@ -943,7 +785,9 @@ function loadTasks() {
     tasks = stored ? JSON.parse(stored) : [];
 }
 
-// saveTasks is now async (see top of file)
+function saveTasks() {
+    localStorage.setItem('schedulerTasks', JSON.stringify(tasks));
+}
 
 // Calendar Rendering with Task Preview Tooltips
 function renderCalendar() {
@@ -1550,10 +1394,7 @@ function switchTab(tabName) {
 }
 
 
-window.addEventListener('DOMContentLoaded', async function() {
-    // Initialize IndexedDB first
-    await initializeData();
-    
+window.addEventListener('DOMContentLoaded', function() {
     // Check if already verified
     if (localStorage.getItem('verified') === 'true') {
         // Check if code was revoked
@@ -1604,8 +1445,6 @@ async function verifyAccessCode() {
     btn.disabled = true;
     btn.textContent = 'VERIFYING...';
     
-    console.log('Attempting verification...', {code, givenName, lastName});
-    
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -1614,12 +1453,8 @@ async function verifyAccessCode() {
             redirect: 'follow'
         });
         
-        console.log('Response status:', response.status);
         const text = await response.text();
-        console.log('Response text:', text);
-        
         const data = JSON.parse(text);
-        console.log('Parsed data:', data);
         
         if (data.success) {
             // Success!
@@ -1749,19 +1584,6 @@ function logoutCode() {
 setInterval(updateClock, 1000);
 updateClock();
 
-    
-// ADMIN FUNCTION - Reset access code
-function resetAccessCode(code) {
-    if (confirm('Reset code "' + code + '" to Available? This will allow it to be used again.')) {
-        localStorage.removeItem('verified');
-        localStorage.removeItem('code');
-        localStorage.removeItem('givenName');
-        localStorage.removeItem('lastName');
-        alert('Code reset in browser. Now update Google Sheet:\n\n1. Change Column B to "Available"\n2. Clear Columns C, D, E\n\nThen refresh page.');
-        location.reload();
-    }
-}
-
-</script>
+    </script>
 </body>
 </html>
