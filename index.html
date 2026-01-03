@@ -1604,6 +1604,8 @@ async function verifyAccessCode() {
     btn.disabled = true;
     btn.textContent = 'VERIFYING...';
     
+    console.log('Attempting verification...', {code, givenName, lastName});
+    
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -1612,8 +1614,12 @@ async function verifyAccessCode() {
             redirect: 'follow'
         });
         
+        console.log('Response status:', response.status);
         const text = await response.text();
+        console.log('Response text:', text);
+        
         const data = JSON.parse(text);
+        console.log('Parsed data:', data);
         
         if (data.success) {
             // Success!
@@ -1743,6 +1749,19 @@ function logoutCode() {
 setInterval(updateClock, 1000);
 updateClock();
 
-    </script>
+    
+// ADMIN FUNCTION - Reset access code
+function resetAccessCode(code) {
+    if (confirm('Reset code "' + code + '" to Available? This will allow it to be used again.')) {
+        localStorage.removeItem('verified');
+        localStorage.removeItem('code');
+        localStorage.removeItem('givenName');
+        localStorage.removeItem('lastName');
+        alert('Code reset in browser. Now update Google Sheet:\n\n1. Change Column B to "Available"\n2. Clear Columns C, D, E\n\nThen refresh page.');
+        location.reload();
+    }
+}
+
+</script>
 </body>
 </html>
