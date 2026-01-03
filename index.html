@@ -38,6 +38,50 @@
         .code-btn:disabled{opacity:0.6;cursor:not-allowed}
         .hide-app{display:none!important}
 
+    
+@media (max-width: 768px) {
+    .settings-panel {
+        padding: 15px;
+    }
+    
+    .theme-options {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    
+    .theme-option {
+        padding: 15px !important;
+        font-size: 1rem !important;
+    }
+    
+    .avatar-selector {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 10px !important;
+    }
+    
+    .avatar-option {
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 2.5rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .theme-options {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    
+    .avatar-selector {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    .avatar-option {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 2rem !important;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -1709,6 +1753,7 @@ async function checkRevoke() {
             // Load saved theme and avatar
             loadTheme();
             loadAvatar();
+            updateProfileDisplay();
             
             // Start periodic check every 5 minutes
             setInterval(checkRevoke, 5 * 60 * 1000);
@@ -1741,6 +1786,29 @@ function showCodeModal() {
     document.querySelector('.container').classList.add('hide-app');
     document.getElementById('givenNameInput').focus();
 }
+
+
+function updateProfileDisplay() {
+    const lastName = localStorage.getItem('lastName');
+    const givenName = localStorage.getItem('givenName');
+    const code = localStorage.getItem('code');
+    
+    if (lastName && givenName) {
+        const displayName = lastName + ', ' + givenName;
+        const nameElement = document.getElementById('profileDisplayName');
+        if (nameElement) {
+            nameElement.textContent = displayName;
+        }
+    }
+    
+    if (code) {
+        const codeElement = document.getElementById('profileDisplayCode');
+        if (codeElement) {
+            codeElement.textContent = code;
+        }
+    }
+}
+
 
 function updateProfile(lastName, givenName) {
     // Update profile name display
