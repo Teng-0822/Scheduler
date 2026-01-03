@@ -221,87 +221,84 @@
 
         <!-- Profile Tab -->
         <div id="profile" class="tab-content">
-            <div class="settings-panel">
-                <div class="settings-section">
-                    <h3>👤 User Profile</h3>
-                    <div class="form-group">
-                        <label for="profileName">Name</label>
-                        <input type="text" id="profileName" placeholder="Enter your name">
-                    </div>
-                    <div class="form-group">
-                        <label for="profileEmail">Email (optional)</label>
-                        <input type="email" id="profileEmail" placeholder="Enter your email">
-                    </div>
-                    <div class="form-group">
-                        <label>Choose Your Avatar</label>
-                        <div class="avatar-selector" id="avatarSelector"></div>
-                    </div>
-                    <button class="btn btn-primary btn-full" onclick="saveProfile()">Save Profile</button>
+            <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: var(--primary-color); margin-bottom: 30px; font-size: 2rem;">👤 User Profile</h2>
+                
+                <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                    <p style="margin-bottom: 15px; font-size: 1.1rem;"><strong>Name:</strong> <span id="profileDisplayName2">Two, Sample</span></p>
+                    <p style="font-size: 1.1rem;"><strong>Access Code:</strong> <span id="profileDisplayCode2">••••••</span></p>
+                </div>
+                
+                <h3 style="color: var(--primary-color); margin: 30px 0 20px 0; font-size: 1.5rem;">Choose Your Avatar</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
+                    <div onclick="saveAvatar('👤')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">👤</div>
+                    <div onclick="saveAvatar('😊')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">😊</div>
+                    <div onclick="saveAvatar('🎯')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🎯</div>
+                    <div onclick="saveAvatar('⭐')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">⭐</div>
+                    <div onclick="saveAvatar('🚀')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🚀</div>
+                    <div onclick="saveAvatar('💼')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">💼</div>
+                    <div onclick="saveAvatar('🎨')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🎨</div>
+                    <div onclick="saveAvatar('🌟')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🌟</div>
+                    <div onclick="saveAvatar('💎')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">💎</div>
+                    <div onclick="saveAvatar('🔥')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🔥</div>
+                    <div onclick="saveAvatar('⚡')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">⚡</div>
+                    <div onclick="saveAvatar('🌈')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🌈</div>
                 </div>
             </div>
         </div>
+
+        <!-- Settings
 
         <!-- Settings Tab -->
         <div id="settings" class="tab-content">
-            <div class="settings-panel">
-                <div class="settings-section">
-                    <h3>🔍 Filter by Client</h3>
-                    <p style="color:var(--text-light);margin-bottom:15px">Choose which client's tasks to display on the calendar</p>
-                    <select id="calendarClientFilter" onchange="filterCalendarByClient()" style="width:100%;padding:12px 15px;border:2px solid var(--border-color);border-radius:8px;font-size:1rem;background:#fff;cursor:pointer">
-                        <option value="all">All Clients</option>
-                    </select>
-                </div>
-
-                <div class="settings-section">
-                    <button class="btn btn-primary btn-full" onclick="toggleThemeSelection()" style="display:flex;justify-content:space-between;align-items:center">
-                        <span>🎨 Theme Selection</span>
-                        <span id="themeToggleIcon">▼</span>
-                    </button>
-                    <div id="themeSelectionPanel" style="display:none;margin-top:15px">
-                        <div class="theme-options" id="themeOptions"></div>
+            <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: var(--primary-color); margin-bottom: 30px; font-size: 2rem;">⚙️ Settings</h2>
+                
+                <h3 style="color: var(--primary-color); margin-bottom: 20px; font-size: 1.5rem;">🎨 Theme Selection</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;">
+                    <div onclick="saveTheme('Default')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
+                        🔵 Default
+                    </div>
+                    <div onclick="saveTheme('Ocean')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
+                        🌊 Ocean
+                    </div>
+                    <div onclick="saveTheme('Sunset')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
+                        🌅 Sunset
+                    </div>
+                    <div onclick="saveTheme('Forest')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
+                        🌲 Forest
+                    </div>
+                    <div onclick="saveTheme('Purple')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
+                        💜 Purple
+                    </div>
+                    <div onclick="saveTheme('Midnight')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
+                        🌙 Midnight
                     </div>
                 </div>
-
-                <div class="settings-section">
-                    <button class="btn btn-primary btn-full" onclick="toggleCustomColors()" style="display:flex;justify-content:space-between;align-items:center">
-                        <span>🎨 Custom Colors</span>
-                        <span id="colorsToggleIcon">▼</span>
-                    </button>
-                    <div id="customColorsPanel" style="display:none;margin-top:15px">
-                        <div class="form-group">
-                            <label>Primary Color</label>
-                            <div class="color-picker-group">
-                                <input type="color" id="primaryColor" value="#4a90e2">
-                                <div class="color-preview" id="primaryPreview" style="background:#4a90e2;color:#fff">Primary</div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Background Gradient Start</label>
-                            <div class="color-picker-group">
-                                <input type="color" id="bgGradientStart" value="#667eea">
-                                <div class="color-preview" id="bgStartPreview" style="background:#667eea;color:#fff">Start</div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Background Gradient End</label>
-                            <div class="color-picker-group">
-                                <input type="color" id="bgGradientEnd" value="#764ba2">
-                                <div class="color-preview" id="bgEndPreview" style="background:#764ba2;color:#fff">End</div>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary btn-full" onclick="applyCustomTheme()">Apply Custom Theme</button>
-                    </div>
+                
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid var(--primary-color);">
+                    <p style="margin: 0; line-height: 1.6;">
+                        <strong>📱 Data Storage:</strong> Your tasks, clients, theme, and avatar are saved locally on this device. They will persist when you close and reopen the app.
+                    </p>
                 </div>
-
-                <div class="settings-section">
-                    <h3>🔄 Reset</h3>
-                    <button class="btn btn-secondary btn-full" onclick="resetToDefault()">Reset to Default</button>
-                </div>
+                
+                <h3 style="color: var(--primary-color); margin-bottom: 20px; font-size: 1.5rem;">🔧 Actions</h3>
+                
+                <button onclick="logoutCode()" style="width: 100%; padding: 18px; background: #e74c3c; color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 700; cursor: pointer; margin-bottom: 15px;">
+                    🚪 Logout
+                </button>
+                
+                <p style="color: #999; text-align: center; font-size: 0.95rem;">
+                    Logout will require a new access code to login again.
+                </p>
             </div>
         </div>
-    </div>
 
-    <!-- Task Modal -->
+        <!-- Task Modal
+
+        <!-- Task Modal -->
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -694,14 +691,28 @@ function saveProfile() {
     alert('Profile saved successfully! ✅');
 }
 
+
 function updateProfileDisplay() {
-    document.getElementById('headerName').textContent = userProfile.name;
-    document.getElementById('headerAvatar').textContent = userProfile.avatar;
-    document.getElementById('profileName').value = userProfile.name;
-    document.getElementById('profileEmail').value = userProfile.email || '';
-    document.querySelectorAll('.avatar-option').forEach(option => {
-        option.classList.toggle('active', option.textContent === userProfile.avatar);
-    });
+    const lastName = localStorage.getItem('lastName');
+    const givenName = localStorage.getItem('givenName');
+    const code = localStorage.getItem('code');
+    
+    if (lastName && givenName) {
+        const displayName = lastName + ', ' + givenName;
+        const nameElement = document.getElementById('profileDisplayName');
+        const nameElement2 = document.getElementById('profileDisplayName2');
+        if (nameElement) nameElement.textContent = displayName;
+        if (nameElement2) nameElement2.textContent = displayName;
+    }
+    
+    if (code) {
+        const codeElement = document.getElementById('profileDisplayCode');
+        const codeElement2 = document.getElementById('profileDisplayCode2');
+        if (codeElement) codeElement.textContent = code;
+        if (codeElement2) codeElement2.textContent = code;
+    }
+}
+);
 }
 
 function renderAvatarOptions() {
@@ -1788,6 +1799,7 @@ function showCodeModal() {
 }
 
 
+
 function updateProfileDisplay() {
     const lastName = localStorage.getItem('lastName');
     const givenName = localStorage.getItem('givenName');
@@ -1796,9 +1808,19 @@ function updateProfileDisplay() {
     if (lastName && givenName) {
         const displayName = lastName + ', ' + givenName;
         const nameElement = document.getElementById('profileDisplayName');
-        if (nameElement) {
-            nameElement.textContent = displayName;
-        }
+        const nameElement2 = document.getElementById('profileDisplayName2');
+        if (nameElement) nameElement.textContent = displayName;
+        if (nameElement2) nameElement2.textContent = displayName;
+    }
+    
+    if (code) {
+        const codeElement = document.getElementById('profileDisplayCode');
+        const codeElement2 = document.getElementById('profileDisplayCode2');
+        if (codeElement) codeElement.textContent = code;
+        if (codeElement2) codeElement2.textContent = code;
+    }
+}
+
     }
     
     if (code) {
