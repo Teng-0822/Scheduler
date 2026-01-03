@@ -82,6 +82,47 @@
     }
 }
 
+    
+@media (max-width: 480px) {
+    .avatar-option {
+        font-size: 2rem !important;
+    }
+    
+    .theme-option {
+        padding: 15px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .theme-option span:first-child {
+        font-size: 1.8rem !important;
+    }
+}
+
+    
+.avatar-option:active {
+    transform: scale(0.95);
+    border-color: var(--primary-color) !important;
+    background: #e3f2fd !important;
+}
+
+.theme-option:active {
+    transform: scale(0.98);
+    border-color: var(--primary-color) !important;
+    background: #e3f2fd !important;
+}
+
+.avatar-option.active {
+    border-color: var(--primary-color) !important;
+    background: #e3f2fd !important;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2) !important;
+}
+
+.theme-option.active {
+    border-color: var(--primary-color) !important;
+    background: #e3f2fd !important;
+    font-weight: 700 !important;
+}
+
     </style>
 </head>
 <body>
@@ -96,7 +137,7 @@
             </div>
             <input type="text" id="codeInput" class="code-input" placeholder="ENTER CODE" maxlength="20">
             <div id="codeError" class="code-error"></div>
-            <button id="codeBtn" class="code-btn" onclick="verifyAccessCode()">VERIFY & CONTINUE</button>
+            <button id="codeBtn" class="code-btn">VERIFY & CONTINUE</button>
         </div>
     </div>
 
@@ -221,84 +262,104 @@
 
         <!-- Profile Tab -->
         <div id="profile" class="tab-content">
-            <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: var(--primary-color); margin-bottom: 30px; font-size: 2rem;">👤 User Profile</h2>
+            <div class="settings-panel">
+                <h2 style="color: var(--primary-color); margin-bottom: 30px;">👤 User Profile</h2>
                 
-                <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
-                    <p style="margin-bottom: 15px; font-size: 1.1rem;"><strong>Name:</strong> <span id="profileDisplayName2">Two, Sample</span></p>
-                    <p style="font-size: 1.1rem;"><strong>Access Code:</strong> <span id="profileDisplayCode2">••••••</span></p>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="profileName" placeholder="Enter your name" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
                 </div>
                 
-                <h3 style="color: var(--primary-color); margin: 30px 0 20px 0; font-size: 1.5rem;">Choose Your Avatar</h3>
-                
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
-                    <div onclick="saveAvatar('👤')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">👤</div>
-                    <div onclick="saveAvatar('😊')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">😊</div>
-                    <div onclick="saveAvatar('🎯')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🎯</div>
-                    <div onclick="saveAvatar('⭐')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">⭐</div>
-                    <div onclick="saveAvatar('🚀')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🚀</div>
-                    <div onclick="saveAvatar('💼')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">💼</div>
-                    <div onclick="saveAvatar('🎨')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🎨</div>
-                    <div onclick="saveAvatar('🌟')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🌟</div>
-                    <div onclick="saveAvatar('💎')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">💎</div>
-                    <div onclick="saveAvatar('🔥')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🔥</div>
-                    <div onclick="saveAvatar('⚡')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">⚡</div>
-                    <div onclick="saveAvatar('🌈')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #f5f5f5; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">🌈</div>
+                <div class="form-group">
+                    <label>Email (optional)</label>
+                    <input type="email" id="profileEmail" placeholder="Enter your email" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
                 </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 15px; font-weight: 600; font-size: 1.1rem;">Choose Your Avatar</label>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 15px; background: #f8f9fa; border-radius: 12px;">
+                        <button class="avatar-option" onclick="saveAvatar('👤')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">👤</button>
+                        <button class="avatar-option" onclick="saveAvatar('😊')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">😊</button>
+                        <button class="avatar-option" onclick="saveAvatar('🎯')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">🎯</button>
+                        <button class="avatar-option" onclick="saveAvatar('⭐')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">⭐</button>
+                        <button class="avatar-option" onclick="saveAvatar('🚀')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">🚀</button>
+                        <button class="avatar-option" onclick="saveAvatar('💼')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">💼</button>
+                        <button class="avatar-option" onclick="saveAvatar('🎨')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">🎨</button>
+                        <button class="avatar-option" onclick="saveAvatar('🌟')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">🌟</button>
+                        <button class="avatar-option" onclick="saveAvatar('💎')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">💎</button>
+                        <button class="avatar-option" onclick="saveAvatar('🔥')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">🔥</button>
+                        <button class="avatar-option" onclick="saveAvatar('⚡')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">⚡</button>
+                        <button class="avatar-option" onclick="saveAvatar('🌈')" style="width: 100%; aspect-ratio: 1; border-radius: 50%; background: #fff; border: 3px solid #ddd; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; padding: 0;">🌈</button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveProfile()" style="width: 100%; padding: 15px; font-size: 1.1rem; margin-top: 20px;">
+                    💾 SAVE PROFILE
+                </button>
             </div>
-        </div>
-
-        <!-- Settings
+        </div></div>
 
         <!-- Settings Tab -->
         <div id="settings" class="tab-content">
-            <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: var(--primary-color); margin-bottom: 30px; font-size: 2rem;">⚙️ Settings</h2>
-                
-                <h3 style="color: var(--primary-color); margin-bottom: 20px; font-size: 1.5rem;">🎨 Theme Selection</h3>
-                
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;">
-                    <div onclick="saveTheme('Default')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
-                        🔵 Default
-                    </div>
-                    <div onclick="saveTheme('Ocean')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
-                        🌊 Ocean
-                    </div>
-                    <div onclick="saveTheme('Sunset')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
-                        🌅 Sunset
-                    </div>
-                    <div onclick="saveTheme('Forest')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
-                        🌲 Forest
-                    </div>
-                    <div onclick="saveTheme('Purple')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
-                        💜 Purple
-                    </div>
-                    <div onclick="saveTheme('Midnight')" style="padding: 20px; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s;">
-                        🌙 Midnight
+            <div class="settings-panel">
+                <div class="settings-section">
+                    <h3>🔍 Filter by Client</h3>
+                    <p style="color:var(--text-light);margin-bottom:15px">Choose which client's tasks to display on the calendar</p>
+                    <select id="calendarClientFilter" onchange="filterCalendarByClient()" style="width:100%;padding:12px 15px;border:2px solid var(--border-color);border-radius:8px;font-size:1rem;background:#fff;cursor:pointer">
+                        <option value="all">All Clients</option>
+                    </select>
+                </div>
+
+                <div class="settings-section">
+                    <button class="btn btn-primary btn-full" onclick="toggleThemeSelection()" style="display:flex;justify-content:space-between;align-items:center">
+                        <span>🎨 Theme Selection</span>
+                        <span id="themeToggleIcon">▼</span>
+                    </button>
+                    <div id="themeSelectionPanel" style="display:none;margin-top:15px">
+                        <div class="theme-options" id="themeOptions"></div>
                     </div>
                 </div>
-                
-                <div style="background: #e3f2fd; padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid var(--primary-color);">
-                    <p style="margin: 0; line-height: 1.6;">
-                        <strong>📱 Data Storage:</strong> Your tasks, clients, theme, and avatar are saved locally on this device. They will persist when you close and reopen the app.
-                    </p>
+
+                <div class="settings-section">
+                    <button class="btn btn-primary btn-full" onclick="toggleCustomColors()" style="display:flex;justify-content:space-between;align-items:center">
+                        <span>🎨 Custom Colors</span>
+                        <span id="colorsToggleIcon">▼</span>
+                    </button>
+                    <div id="customColorsPanel" style="display:none;margin-top:15px">
+                        <div class="form-group">
+                            <label>Primary Color</label>
+                            <div class="color-picker-group">
+                                <input type="color" id="primaryColor" value="#4a90e2">
+                                <div class="color-preview" id="primaryPreview" style="background:#4a90e2;color:#fff">Primary</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Background Gradient Start</label>
+                            <div class="color-picker-group">
+                                <input type="color" id="bgGradientStart" value="#667eea">
+                                <div class="color-preview" id="bgStartPreview" style="background:#667eea;color:#fff">Start</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Background Gradient End</label>
+                            <div class="color-picker-group">
+                                <input type="color" id="bgGradientEnd" value="#764ba2">
+                                <div class="color-preview" id="bgEndPreview" style="background:#764ba2;color:#fff">End</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="applyCustomTheme()">Apply Custom Theme</button>
+                    </div>
                 </div>
-                
-                <h3 style="color: var(--primary-color); margin-bottom: 20px; font-size: 1.5rem;">🔧 Actions</h3>
-                
-                <button onclick="logoutCode()" style="width: 100%; padding: 18px; background: #e74c3c; color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 700; cursor: pointer; margin-bottom: 15px;">
-                    🚪 Logout
-                </button>
-                
-                <p style="color: #999; text-align: center; font-size: 0.95rem;">
-                    Logout will require a new access code to login again.
-                </p>
+
+                <div class="settings-section">
+                    <h3>🔄 Reset</h3>
+                    <button class="btn btn-secondary btn-full" onclick="resetToDefault()">Reset to Default</button>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Task Modal
-
-        <!-- Task Modal -->
+    <!-- Task Modal -->
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -691,28 +752,14 @@ function saveProfile() {
     alert('Profile saved successfully! ✅');
 }
 
-
 function updateProfileDisplay() {
-    const lastName = localStorage.getItem('lastName');
-    const givenName = localStorage.getItem('givenName');
-    const code = localStorage.getItem('code');
-    
-    if (lastName && givenName) {
-        const displayName = lastName + ', ' + givenName;
-        const nameElement = document.getElementById('profileDisplayName');
-        const nameElement2 = document.getElementById('profileDisplayName2');
-        if (nameElement) nameElement.textContent = displayName;
-        if (nameElement2) nameElement2.textContent = displayName;
-    }
-    
-    if (code) {
-        const codeElement = document.getElementById('profileDisplayCode');
-        const codeElement2 = document.getElementById('profileDisplayCode2');
-        if (codeElement) codeElement.textContent = code;
-        if (codeElement2) codeElement2.textContent = code;
-    }
-}
-);
+    document.getElementById('headerName').textContent = userProfile.name;
+    document.getElementById('headerAvatar').textContent = userProfile.avatar;
+    document.getElementById('profileName').value = userProfile.name;
+    document.getElementById('profileEmail').value = userProfile.email || '';
+    document.querySelectorAll('.avatar-option').forEach(option => {
+        option.classList.toggle('active', option.textContent === userProfile.avatar);
+    });
 }
 
 function renderAvatarOptions() {
@@ -1614,17 +1661,7 @@ function switchTab(tabName) {
 
 
 window.addEventListener('DOMContentLoaded', function() {
-    
-    // Check API URL
-    console.log('=== API CONFIGURATION ===');
-    console.log('API URL:', API_URL);
-    if (!API_URL || API_URL.includes('YOUR_')) {
-        console.error('❌ API URL not configured!');
-        alert('Error: API URL not configured. Please update the Google Script URL.');
-    }
-    console.log('========================');
-    
-// Test localStorage
+    // Test localStorage
     testLocalStorage();
     
     // Log current storage
@@ -1642,18 +1679,8 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('givenNameInput').focus();
     }
     
-    
-    // Backup: Add event listener to verify button
-    const verifyBtn = document.getElementById('codeBtn');
-    if (verifyBtn) {
-        verifyBtn.addEventListener('click', verifyAccessCode);
-        console.log('✅ Verify button event listener attached');
-    } else {
-        console.error('❌ Verify button not found!');
-    }
-    
-    // Also allow Enter key on inputs
-document.getElementById('codeInput').addEventListener('keypress', function(e) {
+    // Enter key support
+    document.getElementById('codeInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') verifyAccessCode();
     });
     
@@ -1695,9 +1722,6 @@ async function verifyAccessCode() {
     btn.textContent = 'VERIFYING...';
     
     try {
-        console.log('🔍 Verifying code:', code);
-        console.log('📡 API URL:', API_URL);
-        
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {'Content-Type': 'text/plain'},
@@ -1705,12 +1729,8 @@ async function verifyAccessCode() {
             redirect: 'follow'
         });
         
-        console.log('📥 Response status:', response.status);
         const text = await response.text();
-        console.log('📄 Response text:', text);
-        
         const data = JSON.parse(text);
-        console.log('✅ Parsed data:', data);
         
         if (data.success) {
             // Success!
@@ -1738,12 +1758,8 @@ async function verifyAccessCode() {
         }
         
     } catch (err) {
-        console.error('❌ Verification error:', err);
-        console.error('Error details:', err.message);
-        console.error('Error stack:', err.stack);
-        
-        error.textContent = 'Connection error: ' + err.message;
-        showToast('❌ ' + err.message, 'error');
+        error.textContent = 'Connection error. Check internet and try again.';
+        showToast('❌ Connection error', 'error');
         btn.disabled = false;
         btn.textContent = 'VERIFY & CONTINUE';
     }
@@ -1830,7 +1846,6 @@ function showCodeModal() {
 }
 
 
-
 function updateProfileDisplay() {
     const lastName = localStorage.getItem('lastName');
     const givenName = localStorage.getItem('givenName');
@@ -1839,19 +1854,9 @@ function updateProfileDisplay() {
     if (lastName && givenName) {
         const displayName = lastName + ', ' + givenName;
         const nameElement = document.getElementById('profileDisplayName');
-        const nameElement2 = document.getElementById('profileDisplayName2');
-        if (nameElement) nameElement.textContent = displayName;
-        if (nameElement2) nameElement2.textContent = displayName;
-    }
-    
-    if (code) {
-        const codeElement = document.getElementById('profileDisplayCode');
-        const codeElement2 = document.getElementById('profileDisplayCode2');
-        if (codeElement) codeElement.textContent = code;
-        if (codeElement2) codeElement2.textContent = code;
-    }
-}
-
+        if (nameElement) {
+            nameElement.textContent = displayName;
+        }
     }
     
     if (code) {
